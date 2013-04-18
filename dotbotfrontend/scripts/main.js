@@ -4,7 +4,6 @@ var main =
 	{
 		editor.init();
 		parser.parse(editor.doc);
-		console.log(parser.text);
 	}
 }
 
