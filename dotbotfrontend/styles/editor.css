@@ -1,0 +1,12 @@
+/*Styles for the editor*/
+#editor {
+width:800px;
+height:500px;
+margin:auto;
+outline: 1px dashed #CCC;
+padding:10px;
+}
+
+#editor:hover {
+outline: 1px dashed #00D062;
+}
