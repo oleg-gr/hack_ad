@@ -13,6 +13,7 @@ $(document).ready(function() {
 			parser.parse(editor.doc);
 		}
 	});
+	
 	/*
 	$("#find").on("click", editor.find());
 	$("#next").on("click", editor.findn());
