@@ -7,13 +7,22 @@
 <script type="text/javascript" src="scripts/jquery-1.9.1.min.js"></script>
 <script type="text/javascript" src="scripts/codemirror.js"></script>
 <script type="text/javascript" src="scripts/tnt.js"></script>
+<script type="text/javascript" src="scripts/placeholder.js"></script>
 <script type="text/javascript" src="scripts/editor.js"></script>
 <script type="text/javascript" src="scripts/parser.js"></script>
 <script type="text/javascript" src="scripts/main.js"></script>
 </head>
 <body>
 <p class="center">Start writing your code here:</p>
-<textarea id="editor" name="editor">
-</textarea>
+<textarea id="editor" name="editor" placeholder="Start programming here.."></textarea>
+<div id="controls" class="left">
+	<button type="button" id="compile">Compile!</button><br/>
+	<!--
+	<textarea id="search" rows=1></textarea>
+	<button type="button" id="find">Find</button>
+	<button type="button" id="next">Next</button>
+	<button type="button" id="prev">Previous</button>
+	-->
+</div>
 </body>
 </html>
