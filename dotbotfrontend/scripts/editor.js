@@ -5,7 +5,7 @@ var editor =
 	{
 		var textArea = document.getElementById("editor");
 		editor.doc = CodeMirror.fromTextArea(textArea, {
-			mode: "ruby",
+			mode: "tnt",
 			indentUnit: 3,
 			tabSize: 3,
 			lineNumbers: true
