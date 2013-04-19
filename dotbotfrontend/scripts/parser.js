@@ -15,13 +15,14 @@ var parser =
 			});
 		parser.defs = {};
 		parser.main = parser.buildJSON(parser.code);
-		console.log(parser.main);
-		console.log(parser.defs);
+		console.log(JSON.stringify(parser.main));
+		console.log(JSON.stringify(parser.defs));
 	},
 	
 	buildJSON: function(code)
 	{
 		var temp_code = [];
+		parser.ops = {"=":"equals", "+": "add", "-":"sub", "*":"mult", "/":"div", "%":"mod"};
 		for (var i = 0; i<code.length; i++)
 		{
 			for (var j = 0; j<code[i].length; j++)
@@ -51,29 +52,31 @@ var parser =
 	parseFunction: function(code)
 	{
 		var pf = {};
-		var split_ex = parser.parseExpression(code);
-		if (split_ex.length != 1) parser.convertExpression(split_ex);
+		var split_ex = parser.splitStatement(code, parser.ops);
+		if (split_ex.length != 1)
+		{
+			split_ex = parser.convertExpression(split_ex);
+		}	
+		else split_ex = split_ex[0];
+		var matched = split_ex.match(/(.*?)\((.*)\)/);
+		if (matched != null)
+		{
+			var args = parser.splitStatement(matched[2], {",":","});
+			pf[matched[1]]={};
+			for (var i = 0; i<args.length; i+=2)
+			{
+				pf[matched[1]]["arg"+(i/2)] = parser.parseFunction(args[i]);
+			}
+			return pf;
+		}
 		else
 		{
-			var matched = code.match(/(.*?)\((.*)\)/);
-			if (matched != null)
-			{
-				args = matched[2].split(",");
-				pf[matched[1]]={};
-				for (var i = 0; i<args.length; i++)
-				{
-					pf[matched[1]]["arg"+i] = parser.parseFunction(args[i]);
-					return pf;
-				}
-			}
-			else
-			{
-				return code;
-			}
+			return code;
 		}
+		
 	},
 	
-	parseExpression: function(code)
+	splitStatement: function(code, splitter)
 	{
 		var parentheses = 0;
 		var split_ex = [];
@@ -95,7 +98,7 @@ var parser =
 					temp_ex = "";
 				}
 			}
-			else if (/[-*\+\/]/.test(code[i]) && parentheses == 0)
+			else if (code[i] in splitter && parentheses == 0)
 			{
 				if (temp_ex != "")
 				{
@@ -106,8 +109,61 @@ var parser =
 			}
 			else temp_ex += code[i];
 		}
-		split_ex.push(temp_ex);
+		if (temp_ex != "") split_ex.push(temp_ex);
 		return split_ex;
+	},
+	
+	convertExpression: function(ex)
+	{
+		var postfix = [];
+		var stack = [];
+		if(ex[1]=="=") start=2;
+		else start=0;
+		for (var i = start; i<ex.length; i++)
+		{
+			if(!(parser.ops.hasOwnProperty(ex[i]))) postfix.push(ex[i]);
+			else
+			{
+				if(stack.length == 0) stack.push(ex[i]);
+				else
+				{
+					if(parser.compareOp(stack[stack.length-1],ex[i])>-1) postfix.push(stack.pop());
+					stack.push(ex[i]);
+				}
+			}
+		}
+		while (stack.length != 0)
+		{
+			postfix.push(stack.pop());
+		}
+
+		for (var i = 0; i<postfix.length; i++)
+		{
+			if (parser.ops.hasOwnProperty(postfix[i]))
+			{
+				var op1 = stack.pop();
+				var op2 = stack.pop();
+				stack.push(parser.ops[postfix[i]]+"("+op2+","+op1+")");
+			}
+			else
+			{
+				stack.push(postfix[i]);
+			}
+		}
+		if (start==0) return stack.pop();
+		else return "equals("+ex[0]+","+stack.pop()+")";
+				
+	},
+	
+	compareOp: function(op1, op2)
+	{
+		var ops = [op1,op2];
+		for (var i = 0; i<2; i++)
+		{
+			if(ops[i]=="*"||ops[i]=="/") ops[i]=1;
+			else ops[i]=0;
+		}
+		return (ops[0]-ops[1]);
 	},
 	
 	format: function(line)
