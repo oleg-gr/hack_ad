@@ -4,13 +4,69 @@ var parser =
 	{
 		parser.json = {};
 		parser.code = [];
-		doc.eachLine(function(line){parser.code.push(parser.format(line.text))});
-		console.log(parser.code);
-		parser.buildJSON(parser.code);
+		doc.eachLine(function(line)
+			{
+				parsed_line = parser.format(line.text);
+				for (var i = 0; i<parsed_line.length; i++)
+				{
+					if (parsed_line[i] == "") parsed_line = parsed_line.splice(i, 1)
+				}
+				if (parsed_line[0] != [""]) parser.code.push(parsed_line);
+			});
+		parser.defs = {};
+		parser.main = parser.buildJSON(parser.code);
+		console.log(parser.main);
+		console.log(parser.defs);
 	},
+	
 	buildJSON: function(code)
 	{
-		
+		var temp_code = [];
+		for (var i = 0; i<code.length; i++)
+		{
+			for (var j = 0; j<code[i].length; j++)
+			{
+				if (code[i][j] == "define")
+				{
+					var pf = parser.parseFunction(code[i][++j]);
+					var block = [];
+					i++;
+					while (code[i][0] != "end")
+					{
+						block.push(code[i++]);
+					}
+					console.log(pf);
+					for (var key in pf)
+					{
+						parser.defs[key]={"args": pf[key], "code":parser.buildJSON(block)};
+					}
+				}
+				else if (code[i][j] == "while");
+				else temp_code.push(parser.parseFunction(code[i][j]));
+			}
+		}
+		return temp_code;
+					
+	},
+	
+	parseFunction: function(code)
+	{
+		var pf = {};
+		var matched = code.match(/(.*?)\((.*)\)/);
+		if (matched != null)
+		{
+			args = matched[2].split(",");
+			pf[matched[1]]={};
+			for (var i = 0; i<args.length; i++)
+			{
+				pf[matched[1]]["arg"+i] = parser.parseFunction(args[i]);
+			}
+		}
+		else
+		{
+			return code;
+		}
+		return pf;
 	},
 	
 	format: function(line)

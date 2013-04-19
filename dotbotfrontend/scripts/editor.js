@@ -32,6 +32,7 @@ var editor =
 	findp:function () {
 	
 		this.doc.cursor.findPrevious();
+
 	}
 */
 }
