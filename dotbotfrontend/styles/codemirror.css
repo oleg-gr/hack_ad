@@ -17,6 +17,8 @@
 }
 
 .CodeMirror-activeline-background {background: #e8f2ff !important;}
+.CodeMirror-codeerror {background: #F5B0B0 !important;}
+.CodeMirror-reset {background: #ffffff !important;}
 
 .CodeMirror-empty { outline: 1px solid #c22; }
 
