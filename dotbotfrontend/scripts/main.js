@@ -7,4 +7,11 @@ var main =
 	}
 }
 
-$(document).ready(main.init);
+$(document).ready(function() {
+	main.init();
+	/*
+	$("#find").on("click", editor.find());
+	$("#next").on("click", editor.findn());
+	$("#prev").on("click", editor.findp());
+	*/
+});

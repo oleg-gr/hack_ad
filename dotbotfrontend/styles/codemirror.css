@@ -4,11 +4,25 @@
   /* Set height, width, borders, and global font properties here */
   font-family: monospace;
   height: 300px;
+  border: 1px solid black;
 }
 .CodeMirror-scroll {
   /* Set scrolling behaviour here */
   overflow: auto;
 }
+.CodeMirror-focused .cm-matchhighlight {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFklEQVQI12NgYGBgkKzc8x9CMDAwAAAmhwSbidEoSQAAAABJRU5ErkJggg==);
+  background-position: bottom;
+  background-repeat: repeat-x;
+}
+
+.CodeMirror-activeline-background {background: #e8f2ff !important;}
+
+.CodeMirror-empty { outline: 1px solid #c22; }
+
+.CodeMirror-empty.CodeMirror-focused { outline: none; }
+
+.CodeMirror pre.CodeMirror-placeholder { color: #999; }
 
 /* PADDING */
 
@@ -94,6 +108,7 @@
 
 div.CodeMirror span.CodeMirror-matchingbracket {color: #0f0;}
 div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
+
 
 /* STOP */
 
@@ -208,6 +223,8 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
 .CodeMirror-wrap .CodeMirror-scroll {
   overflow-x: hidden;
 }
+
+
 
 .CodeMirror-measure {
   position: absolute;

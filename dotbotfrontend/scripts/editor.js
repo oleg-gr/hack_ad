@@ -4,12 +4,35 @@ var editor =
 	init: function()
 	{
 		var textArea = document.getElementById("editor");
-		editor.doc = CodeMirror.fromTextArea(textArea, {
+		this.doc = CodeMirror.fromTextArea(textArea, {
 			mode: "tnt",
 			indentUnit: 3,
 			tabSize: 3,
-			lineNumbers: true
+			lineNumbers: true,
+			autofocuse: true,
+			highlightSelectionMatches: true,
+			styleActiveLine: true
 			});
-		editor.doc.setValue("#Program\ndefine  functionName(  x ,   y )  do\n\tfd( lol(x+y)+ 2*y  )\n\tx =  x/2 +   y-1#hahaha\n    end\nfd(10)\nfunctionName(2,4)");
+			
+		//this.doc.setValue("#Program\ndefine  functionName(  fd( x,  i) ,   y )  do\n\tfd( fd(20 )  +fd(23== 10)  )\n\tx =  x +   y\n    end");
+	},
+/*		
+	find:function() {
+	
+		this.doc.cursor = this.doc.getSearchCursor($("#search").val())
+	
+	},
+	
+	findn:function() {
+	
+		this.doc.cursor.findNext();
+	
+	},
+	
+	findp:function () {
+	
+		this.doc.cursor.findPrevious();
+
 	}
+*/
 }
