@@ -19,29 +19,13 @@ CodeMirror.defineMode("tnt", function(config) {
 
   function tokenBase(stream, state) {
     curPunc = null;
-    if (stream.sol() && stream.match("<<") && stream.eol()) {
-      state.tokenize.push(readBlockComment);
-      return "comment";
-    }
     if (stream.eatSpace()) return null;
     var ch = stream.next(), m;
-    if (ch == "`" || ch == "'" || ch == '"' ||
-        (ch == "/" && !stream.eol() && stream.peek() != " ")) {
+    if (ch == "`" || ch == "'" || ch == '"') {
       return chain(readQuoted(ch, "string", ch == '"' || ch == "`"), stream, state);
-    } else if (ch == "%") {
-      var style, embed = false;
-      if (stream.eat("s")) style = "atom";
-      else if (stream.eat(/[WQ]/)) { style = "string"; embed = true; }
-      else if (stream.eat(/[wxqr]/)) style = "string";
-      var delim = stream.eat(/[^\w\s]/);
-      if (!delim) return "operator";
-      if (matching.propertyIsEnumerable(delim)) delim = matching[delim];
-      return chain(readQuoted(delim, style, embed, true), stream, state);
     } else if (ch == "#") {
       stream.skipToEnd();
       return "comment";
-    } else if (ch == "<" && (m = stream.match(/^<-?[\`\"\']?([a-zA-Z_?]\w*)[\`\"\']?(?:;|$)/))) {
-      return chain(readHereDoc(m[1]), stream, state);
     } else if (ch == "0") {
       if (stream.eat("x")) stream.eatWhile(/[\da-fA-F]/);
       else if (stream.eat("b")) stream.eatWhile(/[01]/);
@@ -50,69 +34,26 @@ CodeMirror.defineMode("tnt", function(config) {
     } else if (/\d/.test(ch)) {
       stream.match(/^[\d_]*(?:\.[\d_]+)?(?:[eE][+\-]?[\d_]+)?/);
       return "number";
-    } else if (ch == "?") {
-      while (stream.match(/^\\[CM]-/)) {}
-      if (stream.eat("\\")) stream.eatWhile(/\w/);
-      else stream.next();
-      return "string";
-    } else if (ch == ":") {
-      if (stream.eat("'")) return chain(readQuoted("'", "atom", false), stream, state);
-      if (stream.eat('"')) return chain(readQuoted('"', "atom", true), stream, state);
-      stream.eatWhile(/[\w\?]/);
-      return "atom";
-    } else if (ch == "@") {
-      stream.eat("@");
-      stream.eatWhile(/[\w\?]/);
-      return "variable-2";
-    } else if (ch == "$") {
-      stream.next();
-      stream.eatWhile(/[\w\?]/);
-      return "variable-3";
     } else if (/\w/.test(ch)) {
       stream.eatWhile(/[\w\?]/);
-      if (stream.eat(":")) return "atom";
       return "ident";
-    } else if (ch == "|" && (state.varList || state.lastTok == "{" || state.lastTok == "do")) {
-      curPunc = "|";
-      return null;
     } else if (/[\(\)\[\]{}\\;]/.test(ch)) {
       curPunc = ch;
       return null;
-    } else if (ch == "-" && stream.eat(">")) {
-      return "arrow";
-    } else if (/[=+\-\/*:\.^%<>~|]/.test(ch)) {
-      stream.eatWhile(/[=+\-\/*:\.^%<>~|]/);
+    } else if (/[=+\-*:\.^%~|]/.test(ch)) {
+      stream.eatWhile(/[=+\-*:\.^%~|]/);
       return "operator";
     } else {
       return null;
     }
   }
-
-  function tokenBaseUntilBrace() {
-    var depth = 1;
-    return function(stream, state) {
-      if (stream.peek() == "}") {
-        depth--;
-        if (depth == 0) {
-          state.tokenize.pop();
-          return state.tokenize[state.tokenize.length-1](stream, state);
-        }
-      } else if (stream.peek() == "{") {
-        depth++;
-      }
-      return tokenBase(stream, state);
-    };
-  }
+  
   function readQuoted(quote, style, embed, unescaped) {
     return function(stream, state) {
       var escaped = false, ch;
       while ((ch = stream.next()) != null) {
         if (ch == quote && (unescaped || !escaped)) {
           state.tokenize.pop();
-          break;
-        }
-        if (embed && ch == "#" && !escaped && stream.eat("{")) {
-          state.tokenize.push(tokenBaseUntilBrace(arguments.callee));
           break;
         }
         escaped = !escaped && ch == "\\";
@@ -126,12 +67,6 @@ CodeMirror.defineMode("tnt", function(config) {
       else stream.skipToEnd();
       return "string";
     };
-  }
-  function readBlockComment(stream, state) {
-    if (stream.sol() && stream.match(">>") && stream.eol())
-      state.tokenize.pop();
-    stream.skipToEnd();
-    return "comment";
   }
 
   return {
