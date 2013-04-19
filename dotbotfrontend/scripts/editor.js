@@ -13,7 +13,8 @@ var editor =
 			highlightSelectionMatches: true,
 			styleActiveLine: true
 			});
-		//this.doc.setValue("#Program\ndefine functionName(x,y) do\n\tfd(20)\n\tx=x+y\nend\n");
+			
+		//this.doc.setValue("#Program\ndefine  functionName(  fd( x,  i) ,   y )  do\n\tfd( fd(20 )  +fd(23== 10)  )\n\tx =  x +   y\n    end");
 	},
 /*		
 	find:function() {
@@ -31,7 +32,6 @@ var editor =
 	findp:function () {
 	
 		this.doc.cursor.findPrevious();
-	
 	}
 */
 }
