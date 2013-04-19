@@ -35,7 +35,6 @@ var parser =
 					{
 						block.push(code[i++]);
 					}
-					console.log(pf);
 					for (var key in pf)
 					{
 						parser.defs[key]={"args": pf[key], "code":parser.buildJSON(block)};
@@ -52,21 +51,63 @@ var parser =
 	parseFunction: function(code)
 	{
 		var pf = {};
-		var matched = code.match(/(.*?)\((.*)\)/);
-		if (matched != null)
-		{
-			args = matched[2].split(",");
-			pf[matched[1]]={};
-			for (var i = 0; i<args.length; i++)
-			{
-				pf[matched[1]]["arg"+i] = parser.parseFunction(args[i]);
-			}
-		}
+		var split_ex = parser.parseExpression(code);
+		if (split_ex.length != 1) parser.convertExpression(split_ex);
 		else
 		{
-			return code;
+			var matched = code.match(/(.*?)\((.*)\)/);
+			if (matched != null)
+			{
+				args = matched[2].split(",");
+				pf[matched[1]]={};
+				for (var i = 0; i<args.length; i++)
+				{
+					pf[matched[1]]["arg"+i] = parser.parseFunction(args[i]);
+					return pf;
+				}
+			}
+			else
+			{
+				return code;
+			}
 		}
-		return pf;
+	},
+	
+	parseExpression: function(code)
+	{
+		var parentheses = 0;
+		var split_ex = [];
+		var temp_ex = "";
+		for (var i = 0; i<code.length; i++)
+		{
+			if (code[i] == "(")
+			{
+				parentheses++;
+				temp_ex += "(";
+			}
+			else if (code[i] == ")")
+			{
+				parentheses--;
+				temp_ex += ")";
+				if (parentheses == 0)
+				{
+					split_ex.push(temp_ex);
+					temp_ex = "";
+				}
+			}
+			else if (/[-*\+\/]/.test(code[i]) && parentheses == 0)
+			{
+				if (temp_ex != "")
+				{
+					split_ex.push(temp_ex);
+					temp_ex = "";
+				}
+				split_ex.push(code[i]);
+			}
+			else temp_ex += code[i];
+		}
+		split_ex.push(temp_ex);
+		return split_ex;
 	},
 	
 	format: function(line)
