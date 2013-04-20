@@ -14,6 +14,8 @@ public class compiler {
 
 	public static void main (String args[]) throws IOException {
 
+		//System.out.println(Boolean.toString(!("true".equals("false"))));
+
 		File file = new File("test.txt");
 		String content = null;
 		try {
@@ -25,7 +27,7 @@ public class compiler {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		compiler.compile (content);
+		compile (content);
 
 	}
 
@@ -43,7 +45,7 @@ public class compiler {
 
 		for (int i = 0; i < main.length(); i++) {
 
-			compiler.evaluateObject(main.getJSONObject(i), definitions);
+			evaluateObject(main.getJSONObject(i), definitions);
 
 		}
 
@@ -57,54 +59,98 @@ public class compiler {
 		//System.out.println(function.toString());
 
 		JSONArray keys = function.names();
+		if (keys != null) {
+			for (int i = 0; i < keys.length(); i++) { 
+				String temp_str = keys.getString(i);
+				if (function.get(temp_str).getClass() != CHECK.getClass()) {
+					function.put(temp_str, evaluateObject(function.getJSONObject(temp_str), d));
 
-		for (int i = 0; i < keys.length(); i++) { 
-			String temp_str = keys.getString(i);
-
-			if (function.get(temp_str).getClass() != compiler.CHECK.getClass()) {
-
-				function.put(temp_str, compiler.evaluateObject(function.getJSONObject(temp_str), d));
+				}
 
 			}
-
 		}
 		//System.out.println(jsonObject.toString());
 		switch (name) {
 
-		case "add": return compiler.add((String) function.get("arg0"),(String) function.get("arg1"));
+		case "add": return add((String) function.get("arg0"),(String) function.get("arg1"));
 
-		case "sub": return compiler.sub((String) function.get("arg0"),(String) function.get("arg1"));
+		case "sub": return sub((String) function.get("arg0"),(String) function.get("arg1"));
 
-		case "assign": compiler.assign((String) function.get("arg0"),(String) function.get("arg1")); 
+		case "assign": assign((String) function.get("arg0"),(String) function.get("arg1")); 
 		break;
 
-		case "print": compiler.print((String) function.get("arg0"));
+		case "print": print((String) function.get("arg0"));
 		break;
+
+		case "greater_than": return greater((String) function.get("arg0"),(String) function.get("arg1"));
+
+		case "less_than": return greater((String) function.get("arg1"),(String) function.get("arg0"));
+
+		case "equals": return equals((String) function.get("arg1"),(String) function.get("arg0"));
+
+		case "and": return and((String) function.get("arg0"),(String) function.get("arg1"));
+
+		case "or": return or((String) function.get("arg0"),(String) function.get("arg1"));
+
+		case "not": return not((String) function.get("arg0"));
+
+		case "mult": return mult((String) function.get("arg0"),(String) function.get("arg1"));
+
+		case "div": return div((String) function.get("arg0"),(String) function.get("arg1"));
+
+		case "mod": return mod((String) function.get("arg0"),(String) function.get("arg1"));
+
+		case "forward": forward((String) function.get("arg0"));
+		break;
+
+		case "fd": forward((String) function.get("arg0"));
+		break;
+		
+		case "backward": backward((String) function.get("arg0"));
+		break;
+		
+		case "bd": backward((String) function.get("arg0"));
+		break;
+		
+		case "left": left((String) function.get("arg0"));
+		break;
+		
+		case "lt": left((String) function.get("arg0"));
+		break;
+		
+		case "right": right((String) function.get("arg0"));
+		break;
+		
+		case "rt": right((String) function.get("arg0"));
+		break;
+
 
 		default: 
 			if (d.has(name)) {
 				//put all arguments into an array
 				JSONObject definedfunction = d.getJSONObject(name);
-				System.out.println("User-defined function: " + definedfunction.toString());
+				//System.out.println("User-defined function: " + definedfunction.toString());
 				JSONObject localvariables = new JSONObject();
 				JSONObject argumentsdefinitions = definedfunction.getJSONObject("args"); //definition of arguments
-				System.out.println("User-defined function arguments: " + argumentsdefinitions.toString());
-				System.out.println("Our function:" + function.toString());
+				//System.out.println("User-defined function arguments: " + argumentsdefinitions.toString());
+				//System.out.println("Our function:" + function.toString());
 				if (function.length() == argumentsdefinitions.length()) {
+
 					for (int i = 0; i < function.length(); i++) {
+						//System.out.println("sad");
 						String argumentnum = "arg" + i;
 						localvariables.put(argumentsdefinitions.getString(argumentnum), lookup(function.getString(argumentnum)));
 					}
 
 					variables.add(localvariables);
 
-					System.out.println("Local variables: " + getScope().toString());
+					//System.out.println("Local variables: " + getScope().toString());
 
 					JSONArray ourcode = definedfunction.getJSONArray("code");
 
 					for (int i = 0; i < ourcode.length(); i++) {
 
-						compiler.evaluateObject(ourcode.getJSONObject(i), d);
+						evaluateObject(ourcode.getJSONObject(i), d);
 
 					}
 
@@ -128,6 +174,30 @@ public class compiler {
 
 	}
 
+	private static void forward(String x) {
+		
+		//implement forward function, x is distance or duration
+		
+	}
+	
+	private static void backward(String x) {
+		
+		//implement forward function, x is distance or duration
+		
+	}
+	
+	private static void left(String x) {
+		
+		//implement forward function, x is angles or duration
+		
+	}
+	
+	private static void right(String x) {
+		
+		//implement forward function, x is angles or duration
+		
+	}
+	
 	private static void assign(String x, String y) {
 		//System.out.println("assigning "+x+" to "+y);
 		if (getScope().has(x)) {
@@ -137,34 +207,92 @@ public class compiler {
 
 
 		getScope().put(x, y);
-		//System.out.println(compiler.variables.toString());
+		//System.out.println(variables.toString());
 	}
 
 	private static String add(String x, String y) {
 
-		return Integer.toString(Integer.parseInt(compiler.lookup(x))+Integer.parseInt(compiler.lookup(y)));
+		return Integer.toString(Integer.parseInt(lookup(x))+Integer.parseInt(lookup(y)));
 
 	}
 
 	private static String sub(String x, String y) {
 
-		return Integer.toString(Integer.parseInt(compiler.lookup(x))-Integer.parseInt(compiler.lookup(y)));
+		return Integer.toString(Integer.parseInt(lookup(x))-Integer.parseInt(lookup(y)));
+
+	}
+
+	private static String mult(String x, String y) {
+
+		return Integer.toString(Integer.parseInt(lookup(x))*Integer.parseInt(lookup(y)));
+
+	}
+
+	private static String div(String x, String y) {
+
+		return Integer.toString(Integer.parseInt(lookup(x))/Integer.parseInt(lookup(y)));
+
+	}
+
+	private static String mod(String x, String y) {
+
+		return Integer.toString(Integer.parseInt(lookup(x)) % Integer.parseInt(lookup(y)));
 
 	}
 
 	private static String print(String x) {
 		//System.out.println("printing: ");
-		System.out.println(compiler.lookup(x)); //change to real printing
+		System.out.println(lookup(x)); //change to real printing
 		return ""; //or x
+
+	}
+
+	private static String greater(String x, String y) {
+
+		return Boolean.toString(Integer.parseInt(lookup(x))>Integer.parseInt(lookup(y)));
+
+	}
+
+	private static String equals(String x, String y) {
+
+		return Boolean.toString(Integer.parseInt(lookup(x))==Integer.parseInt(lookup(y)));
+
+	}
+
+	private static String and(String x, String y) {
+
+		return Boolean.toString(x.equals("true") && y.equals("true"));
+
+	}
+
+	private static String or(String x, String y) {
+
+		return Boolean.toString(x.equals("true") || y.equals("true"));
+
+	}
+
+	private static String not(String x) {
+
+		return Boolean.toString(!(x.equals("true")));
 
 	}
 
 	private static String lookup(String x) {
 		//System.out.println("lookup: "+x);
+		if (x.length() > 0) {
+			if (x.substring(0, 1).equals("^")) {
+
+				return x.substring(1, x.length());
+
+			}
+		}
+
 		for (int i = variables.size()-1; i > -1; i--) {
+			//System.out.println(variables.get(i).toString());
 			if (variables.get(i).has(x)) {
-				//System.out.println("is present: "+compiler.variables.getString(x));
+				//System.out.println("is present: "+variables.getString(x));
 				return (String) variables.get(i).getString(x);
+
 
 			}
 		}
