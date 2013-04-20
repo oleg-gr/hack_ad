@@ -13,6 +13,8 @@ public class compiler {
 
 
 	public static void main (String args[]) throws IOException {
+		
+		//System.out.println(Boolean.toString(!("true".equals("false"))));
 
 		File file = new File("test.txt");
 		String content = null;
@@ -80,9 +82,24 @@ public class compiler {
 		case "print": print((String) function.get("arg0"));
 		break;
 
-		case "greater_than":assign((String) function.get("arg0"),(String) function.get("arg1")); 
-		break;
+		case "greater_than": return greater((String) function.get("arg0"),(String) function.get("arg1"));
+		
+		case "less_than": return greater((String) function.get("arg1"),(String) function.get("arg0"));
 
+		case "equals": return equals((String) function.get("arg1"),(String) function.get("arg0"));
+			
+		case "and": return and((String) function.get("arg0"),(String) function.get("arg1"));
+		
+		case "or": return or((String) function.get("arg0"),(String) function.get("arg1"));
+		
+		case "not": return not((String) function.get("arg0"));
+		
+		case "mult": return mult((String) function.get("arg0"),(String) function.get("arg1"));
+		
+		case "div": return div((String) function.get("arg0"),(String) function.get("arg1"));
+		
+		case "mod": return mod((String) function.get("arg0"),(String) function.get("arg1"));
+		
 		default: 
 			if (d.has(name)) {
 				//put all arguments into an array
@@ -155,6 +172,24 @@ public class compiler {
 		return Integer.toString(Integer.parseInt(lookup(x))-Integer.parseInt(lookup(y)));
 
 	}
+	
+	private static String mult(String x, String y) {
+
+		return Integer.toString(Integer.parseInt(lookup(x))*Integer.parseInt(lookup(y)));
+
+	}
+	
+	private static String div(String x, String y) {
+
+		return Integer.toString(Integer.parseInt(lookup(x))/Integer.parseInt(lookup(y)));
+
+	}
+	
+	private static String mod(String x, String y) {
+
+		return Integer.toString(Integer.parseInt(lookup(x)) % Integer.parseInt(lookup(y)));
+
+	}
 
 	private static String print(String x) {
 		//System.out.println("printing: ");
@@ -162,7 +197,37 @@ public class compiler {
 		return ""; //or x
 
 	}
+	
+	private static String greater(String x, String y) {
 
+		return Boolean.toString(Integer.parseInt(lookup(x))>Integer.parseInt(lookup(y)));
+
+	}
+
+	private static String equals(String x, String y) {
+
+		return Boolean.toString(Integer.parseInt(lookup(x))==Integer.parseInt(lookup(y)));
+
+	}
+	
+	private static String and(String x, String y) {
+
+		return Boolean.toString(x.equals("true") && y.equals("true"));
+
+	}
+	
+	private static String or(String x, String y) {
+
+		return Boolean.toString(x.equals("true") || y.equals("true"));
+
+	}
+	
+	private static String not(String x) {
+
+		return Boolean.toString(!(x.equals("true")));
+
+	}
+	
 	private static String lookup(String x) {
 		//System.out.println("lookup: "+x);
 		if (x.length() > 0) {

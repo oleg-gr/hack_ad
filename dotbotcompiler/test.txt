@@ -1,1 +1,1 @@
-{"status":"","definitions":{"hc":{"args":{},"code":[{"print":{"arg0":{"add":{"arg0":"x","arg1":"x"}}}}]},"functionName":{"args":{},"code":[{"print":{"arg0":"x"}},{"print":{"arg0":"^yes"}},{"hc":{}}]}},"main":[{"assign":{"arg0":"z","arg1":"99"}},{"assign":{"arg0":"x","arg1":{"sub":{"arg0":{"add":{"arg0":"1","arg1":"23"}},"arg1":"z"}}}},{"h":{}},{"functionName":{}}]} 
+{"status":"","definitions":{},"main":[{"print":{"arg0":{"mod":{"arg0":"10","arg1":"3"}}}}]} 
