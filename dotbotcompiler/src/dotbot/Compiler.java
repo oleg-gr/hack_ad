@@ -11,8 +11,8 @@ public class Compiler {
 
 	ArrayList <JSONObject> variables = new ArrayList <>(); 
 
-	JSONObject definitions;
-	JSONArray main;
+	public JSONObject definitions;
+	public JSONArray main;
 	int count = 0;
 
 
@@ -51,10 +51,16 @@ public class Compiler {
 	}
 
 	public void compile() {
+		
+		this.compile(this.main);
+		
+	}
+	
+	public void compile(JSONArray code) {
 
-		for (int i = 0; i < this.main.length(); i++) {
+		for (int i = 0; i < code.length(); i++) {
 
-			evaluateObject(this.main.getJSONObject(i), this.definitions);
+			evaluateObject(code.getJSONObject(i));
 
 		}
 
@@ -62,13 +68,13 @@ public class Compiler {
 
 	public void next() {
 		
-		evaluateObject(this.main.getJSONObject(this.count++), this.definitions);
+		evaluateObject(this.main.getJSONObject(this.count++));
 
 	}
 
 
 
-	private String evaluateObject(JSONObject jsonObject, JSONObject d) {
+	private String evaluateObject(JSONObject jsonObject) {
 		String name = (String) jsonObject.keys().next();
 
 		JSONObject function = jsonObject.getJSONObject(name);
@@ -76,15 +82,26 @@ public class Compiler {
 		//System.out.println(function.toString());
 
 		JSONArray keys = function.names();
-		if (keys != null) {
+		if (keys != null && !name.equals("if")) {
 			for (int i = 0; i < keys.length(); i++) { 
 				String temp_str = keys.getString(i);
 				if (function.get(temp_str).getClass() != CHECK.getClass()) {
-					function.put(temp_str, evaluateObject(function.getJSONObject(temp_str), d));
+					function.put(temp_str, evaluateObject(function.getJSONObject(temp_str)));
 
 				}
 
 			}
+		}
+		else {
+			
+			System.out.println("if!?");
+			
+			if (evaluateObject(function.getJSONObject("condition")).equals("true")) {
+				
+				this.compile(function.getJSONArray("code"));
+				
+			}
+			
 		}
 		//System.out.println(jsonObject.toString());
 		switch (name) {
@@ -143,9 +160,9 @@ public class Compiler {
 
 
 		default: 
-			if (d.has(name)) {
+			if (this.definitions.has(name)) {
 				//put all arguments into an array
-				JSONObject definedfunction = d.getJSONObject(name);
+				JSONObject definedfunction = this.definitions.getJSONObject(name);
 				//System.out.println("User-defined function: " + definedfunction.toString());
 				JSONObject localvariables = new JSONObject();
 				JSONObject argumentsdefinitions = definedfunction.getJSONObject("args"); //definition of arguments
@@ -167,7 +184,7 @@ public class Compiler {
 
 					for (int i = 0; i < ourcode.length(); i++) {
 
-						evaluateObject(ourcode.getJSONObject(i), d);
+						evaluateObject(ourcode.getJSONObject(i));
 
 					}
 
