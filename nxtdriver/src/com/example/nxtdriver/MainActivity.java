@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
@@ -76,19 +77,7 @@ public class MainActivity extends Activity implements OnClickListener{
         
         readButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                readNXT.execute( new Runnable() {
-                    public void run(){
-                        //status.setText("Waiting...");
-                        try {
-                            mmInputStream.read(received);
-                        } catch (Exception e) {
-                            String error = e.getMessage();
-                            Log.v("nxtdriver", error);
-                            sensor.setText("Failed to read");
-                        }
-                    }
-                });
-                sensor.setText("Received: " + String.valueOf(received[2]));
+                readNXT.scheduleAtFixedRate(new Runnable(){public void run(){new readSensor().execute();}}, 0, 10, TimeUnit.MILLISECONDS);
             }
         });
         
@@ -101,7 +90,7 @@ public class MainActivity extends Activity implements OnClickListener{
     
     @Override
     public void onClick(final View v){
-        sendNXT.scheduleAtFixedRate(new Runnable() {public void run() {sendCmd(v);}}, 500, TimeUnit.MILLISECONDS);
+        new readSensor();
     }
     
     public void sendCmd(View v){
@@ -187,5 +176,24 @@ public class MainActivity extends Activity implements OnClickListener{
         mmOutputStream.writeByte(motora);
         mmOutputStream.writeByte(motorb);
         mmOutputStream.writeByte(motorc);        
+    }
+    private class readSensor extends AsyncTask<Void, Void, String> {
+    	@Override
+    	protected String doInBackground(Void... params) {
+        	try {
+                mmInputStream.read(received);
+            } catch (Exception e) {
+                String error = e.getMessage();
+                Log.v("nxtdriver", error);
+                sensor.setText("Failed to read");
+            }
+            return String.valueOf(received[2]);
+        }
+
+    	@Override
+        protected void onPostExecute(String distance) {
+        	sensor.setText("Received: " + distance);
+        }
+
     }
 }
