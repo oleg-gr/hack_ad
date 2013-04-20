@@ -119,10 +119,9 @@ var parser =
 	
 	convertExpression: function(ex)
 	{
-		console.log(ex);
 		var postfix = [];
 		var stack = [];
-		if(ex[1]=="=") {start=2;console.log(true);}
+		if(ex[1]=="=") start=2
 		else start=0;
 		for (var i = start; i<ex.length; i++)
 		{
@@ -141,12 +140,10 @@ var parser =
 		{
 			postfix.push(stack.pop());
 		}
-		console.log(postfix);
 		for (var i = 0; i<postfix.length; i++)
 		{
 			if (parser.ops.hasOwnProperty(postfix[i]))
 			{
-				console.log(postfix[i]);
 				var op1 = stack.pop();
 				var op2 = stack.pop();
 				stack.push(parser.ops[postfix[i]]+"("+op2+","+op1+")");
