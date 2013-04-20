@@ -15,8 +15,8 @@ var parser =
 			});
 		parser.defs = {};
 		parser.main = parser.buildJSON(parser.code);
-		console.log(JSON.stringify(parser.main));
-		console.log(JSON.stringify(parser.defs));
+		parser.superJSON = {"status":"", "definitions":parser.defs, "main":parser.main};
+		console.log(JSON.stringify(parser.superJSON));
 	},
 	
 	buildJSON: function(code)
