@@ -14,7 +14,7 @@ var editor =
 			styleActiveLine: true
 			});
 			
-		this.doc.setValue("#Program\ndefine functionName(x,i,y) do\n\tfd(fd(20))+fd(23-10)/(51-2)*63\n\tx=x+y\nend");
+		this.doc.setValue("#Program\ndefine square(x) do\n\ti=0\n\twhile i<4\n\t\tfd(x)\n\t\tlt(90)\n\t\ti=i+1\n\tend\nsquare(40)");
 	},
 /*		
 	find:function() {
