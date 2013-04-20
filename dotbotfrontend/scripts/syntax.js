@@ -14,11 +14,11 @@ var syntax = {
         		return false;
         	}
         	
-			if ((line.indexOf("while") != -1 || line.indexOf("if") != -1) && ((line.indexOf("true") == -1 && line.indexOf("==") == -1 && line.indexOf(">") == -1 && line.indexOf("false") == -1 && line.indexOf("<") == -1 && line.indexOf("!=") == -1) || (line.indexOf("<<") != -1 || line.indexOf(">>") != -1 || line.indexOf("!==") != -1))) {
+			/*if ((line.indexOf("while") != -1 || line.indexOf("if") != -1) && ((line.indexOf("true") == -1 && line.indexOf("==") == -1 && line.indexOf(">") == -1 && line.indexOf("false") == -1 && line.indexOf("<") == -1 && line.indexOf("!=") == -1) || (line.indexOf("<<") != -1 || line.indexOf(">>") != -1 || line.indexOf("!==") != -1))) {
 				this.hl(i);
         		syntax.out("Condition not found or not properly defined at line", i+1);
         		return false;
-			} 
+			} */
         	
         	if (line.indexOf("define") != -1) {
 				if (line.indexOf("(") == -1) {
