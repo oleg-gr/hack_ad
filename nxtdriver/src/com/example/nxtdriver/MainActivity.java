@@ -16,6 +16,8 @@ import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class MainActivity extends Activity implements OnClickListener{
     
@@ -25,10 +27,10 @@ public class MainActivity extends Activity implements OnClickListener{
     BluetoothDevice mmDevice;
     DataOutputStream mmOutputStream;
     InputStream mmInputStream;
-    ExecutorService sendNXT;
-    ExecutorService readNXT;
-    ExecutorService sendServer;
-    ExecutorService background;
+    ScheduledExecutorService sendNXT;
+    ScheduledExecutorService readNXT;
+    ScheduledExecutorService sendServer;
+    ScheduledExecutorService background;
     TextView sensor;
     byte motora = 0;
     byte motorb = 0;
@@ -42,8 +44,10 @@ public class MainActivity extends Activity implements OnClickListener{
         
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        connect = Executors.ExecutorService();
-        background = Executors.ExecutorService();
+        sendNXT = Executors.newSingleThreadScheduledExecutor();
+        readNXT = Executors.newSingleThreadScheduledExecutor();
+        sendServer = Executors.newSingleThreadScheduledExecutor();
+        background = Executors.newSingleThreadScheduledExecutor();
         Button forwardButton = (Button)findViewById(R.id.forward);
         Button reverseButton = (Button)findViewById(R.id.reverse);
         Button leftButton = (Button)findViewById(R.id.left);
@@ -95,8 +99,8 @@ public class MainActivity extends Activity implements OnClickListener{
     }
     
     @Override
-    public void onClick(View v){
-        sendNXT.execute(sendCmd(v));
+    public void onClick(final View v){
+        sendNXT.execute(new Runnable() {public void run() {sendCmd(v);}});
     }
     
     public void sendCmd(View v){
@@ -133,9 +137,9 @@ public class MainActivity extends Activity implements OnClickListener{
                     motora = 0;
                     motorb = 0;
                     break;
-                }
-                    
-            }}catch(Exception e){}
+                } 
+            } send();
+            }catch(Exception e){}
     }
     
     void findBT() throws Exception
@@ -178,10 +182,10 @@ public class MainActivity extends Activity implements OnClickListener{
         
     }
     
-    void send(int code, String msg) throws Exception
+    void send() throws Exception
     {
-        mmOutputStream.writeByte(code);
-        mmOutputStream.writeByte(code);
-        
+        mmOutputStream.writeByte(motora);
+        mmOutputStream.writeByte(motorb);
+        mmOutputStream.writeByte(motorc);        
     }
 }
