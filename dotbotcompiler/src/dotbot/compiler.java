@@ -1,87 +1,86 @@
 package dotbot;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class compiler {
-	
+
 	static String CHECK = "";
-	
-	static ArrayList <String> userFunctions = new ArrayList <>(); 
-	
-	
+
+	static ArrayList <JSONObject> variables = new ArrayList <>(); 
+
+
 	public static void main (String args[]) throws IOException {
-		
+
 		File file = new File("test.txt");
 		String content = null;
 		try {
-		       FileReader reader = new FileReader(file);
-		       char[] chars = new char[(int) file.length()];
-		       reader.read(chars);
-		       content = new String(chars);
-		       reader.close();
-		   } catch (IOException e) {
-		       e.printStackTrace();
+			FileReader reader = new FileReader(file);
+			char[] chars = new char[(int) file.length()];
+			reader.read(chars);
+			content = new String(chars);
+			reader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		compiler.compile (content);
-		
+
 	}
-	
+
 	private static void compile (String x) {
 
 		JSONObject superJSON = new JSONObject(x);
-		
+
 		JSONObject definitions = superJSON.getJSONObject("definitions");		
-		
+
 		JSONArray main = superJSON.getJSONArray("main");
-		
-		JSONObject variables = new JSONObject();
-		
+
+
+		variables.add(new JSONObject());
+
+
 		for (int i = 0; i < main.length(); i++) {
-			
-			compiler.evaluateObject(main.getJSONObject(i), variables, definitions);
-			
+
+			compiler.evaluateObject(main.getJSONObject(i), definitions);
+
 		}
-		
+
 	}
 
-	private static String evaluateObject(JSONObject jsonObject, JSONObject v, JSONObject d) {
+	private static String evaluateObject(JSONObject jsonObject, JSONObject d) {
 		String name = (String) jsonObject.keys().next();
-		
+
 		JSONObject function = jsonObject.getJSONObject(name);
 		//System.out.print(name);
 		//System.out.println(function.toString());
-		
+
 		JSONArray keys = function.names();
-		
+
 		for (int i = 0; i < keys.length(); i++) { 
 			String temp_str = keys.getString(i);
-			
+
 			if (function.get(temp_str).getClass() != compiler.CHECK.getClass()) {
-				
-				function.put(temp_str, compiler.evaluateObject(function.getJSONObject(temp_str), v, d));
-				
+
+				function.put(temp_str, compiler.evaluateObject(function.getJSONObject(temp_str), d));
+
 			}
-			
+
 		}
 		//System.out.println(jsonObject.toString());
 		switch (name) {
-		
-		case "add": return compiler.add((String) function.get("arg0"),(String) function.get("arg1"), v);
-		
-		case "sub": return compiler.sub((String) function.get("arg0"),(String) function.get("arg1"), v);
-		
-		case "assign": compiler.assign((String) function.get("arg0"),(String) function.get("arg1"), v); 
+
+		case "add": return compiler.add((String) function.get("arg0"),(String) function.get("arg1"));
+
+		case "sub": return compiler.sub((String) function.get("arg0"),(String) function.get("arg1"));
+
+		case "assign": compiler.assign((String) function.get("arg0"),(String) function.get("arg1")); 
 		break;
-		
-		case "print": compiler.print((String) function.get("arg0"), v);
+
+		case "print": compiler.print((String) function.get("arg0"));
 		break;
-		
+
 		default: 
 			if (d.has(name)) {
 				//put all arguments into an array
@@ -94,77 +93,90 @@ public class compiler {
 				if (function.length() == argumentsdefinitions.length()) {
 					for (int i = 0; i < function.length(); i++) {
 						String argumentnum = "arg" + i;
-						localvariables.put(argumentsdefinitions.getString(argumentnum), lookup(function.getString(argumentnum), v));
+						localvariables.put(argumentsdefinitions.getString(argumentnum), lookup(function.getString(argumentnum)));
 					}
-					System.out.println("Local variables: " + localvariables.toString());
+
+					variables.add(localvariables);
+
+					System.out.println("Local variables: " + getScope().toString());
+
 					JSONArray ourcode = definedfunction.getJSONArray("code");
+
 					for (int i = 0; i < ourcode.length(); i++) {
-						
-						compiler.evaluateObject(ourcode.getJSONObject(i), localvariables, d);
-					
+
+						compiler.evaluateObject(ourcode.getJSONObject(i), d);
+
 					}
+
+					variables.remove(variables.size()-1);
+
 				}
 				else {
-					
+
 					//"different numeber of arguments" error
-					
+
 				}
 			}
 			else {
-				
+
 				//put an error statement "not a function" here
-				
+
 			}
 		}
-		
+
 		return "";		
-		
+
 	}
 
-	private static void assign(String x, String y, JSONObject v) {
+	private static void assign(String x, String y) {
 		//System.out.println("assigning "+x+" to "+y);
-		if (v.has(x)) {
+		if (getScope().has(x)) {
 			//System.out.println("looked up and present");
-			v.remove(x);
+			getScope().remove(x);
 		}
-		
-		v.put(x, y);
+
+
+		getScope().put(x, y);
 		//System.out.println(compiler.variables.toString());
 	}
 
-	private static String add(String x, String y, JSONObject v) {
-		
-		return Integer.toString(Integer.parseInt(compiler.lookup(x, v))+Integer.parseInt(compiler.lookup(y, v)));
-		
+	private static String add(String x, String y) {
+
+		return Integer.toString(Integer.parseInt(compiler.lookup(x))+Integer.parseInt(compiler.lookup(y)));
+
 	}
 
-	private static String sub(String x, String y, JSONObject v) {
-		
-		return Integer.toString(Integer.parseInt(compiler.lookup(x, v))-Integer.parseInt(compiler.lookup(y, v)));
-		
+	private static String sub(String x, String y) {
+
+		return Integer.toString(Integer.parseInt(compiler.lookup(x))-Integer.parseInt(compiler.lookup(y)));
+
 	}
-	
-	private static String print(String x, JSONObject v) {
+
+	private static String print(String x) {
 		//System.out.println("printing: ");
-		System.out.println(compiler.lookup(x, v)); //change to real printing
+		System.out.println(compiler.lookup(x)); //change to real printing
 		return ""; //or x
-		
+
 	}
-	
-	private static String lookup(String x, JSONObject v) {
+
+	private static String lookup(String x) {
 		//System.out.println("lookup: "+x);
-		if (v.has(x)) {
-			//System.out.println("is present: "+compiler.variables.getString(x));
-			return v.getString(x);
-			
+		for (int i = variables.size()-1; i > -1; i--) {
+			if (variables.get(i).has(x)) {
+				//System.out.println("is present: "+compiler.variables.getString(x));
+				return (String) variables.get(i).getString(x);
+
+			}
 		}
-		
-		else {
-			//System.out.println("not present");
-			return x;
-			
-		}
-		
+
+		return x;
 	}
+
+	private static JSONObject getScope() {
+
+		return variables.get(variables.size()-1);
+
+	}
+
 
 }
