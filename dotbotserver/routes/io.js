@@ -1,19 +1,22 @@
 var mongo = require('mongodb');
 
 var mongoUri = process.env.MONGOLAB_URI || 
-  process.env.MONGOHQ_URL || 
-  'localhost'; 
+  'mongodb://localhost/disco'; 
+console.log(mongoUri);
 
 var Server = mongo.Server,
     Db = mongo.Db,
     BSON = mongo.BSONPure;
 
-var server = new Server(mongoUri, 27017, {});
-db = new Db('disco', server, {w: 1, safe: true});
-db.open(function(err, db) {
-    if(!err) {
-        console.log("Connected to 'disco' database");
-    }
+//var server = new Server(mongoUri, 27017, {});
+var db;
+mongo.Db.connect(mongoUri, {'w':1, 'safe': 'true'}, function(err, database){
+  database.safe = true;
+  database.w = 1;
+  db = database;
+  if(!err) {
+    console.log("Connected to 'disco' database");
+  }
 });
 
 var removeFirst = function(id, collectionName, res){
@@ -118,6 +121,7 @@ var alive = function(msg, res){
     collection.remove({"id": parseInt(msg.id, 10)}, function(err, num){
       collection.insert(msg, {safe: true}, function(err, result){
         if (err) {
+          console.log(err);
           res.write(JSON.stringify({status: 500, error: err}));
         } else {
           console.log('Success: ' + JSON.stringify(result[0]));
