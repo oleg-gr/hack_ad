@@ -38,6 +38,7 @@ public class MainActivity extends Activity implements OnClickListener{
     byte motora_o = 0;
     byte motorb_o = 0;
     byte motorc_o = 0;
+    byte[] received = new byte[3];
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,10 +78,9 @@ public class MainActivity extends Activity implements OnClickListener{
                 readNXT.execute( new Runnable() {
                     public void run(){
                         status.setText("Waiting...");
-                        byte[] b = new byte[3];
                         try {
-                            mmInputStream.read(b);
-                            sensor.setText(String.valueOf(b[2]));
+                            mmInputStream.read(received);
+                            //Log.v("nxtdriver", String.valueOf(b[2]));
                         } catch (Exception e) {
                             String error = e.getMessage();
                             Log.v("nxtdriver", error);
@@ -88,6 +88,7 @@ public class MainActivity extends Activity implements OnClickListener{
                         }
                     }
                 });
+                sensor.setText(String.valueOf(received[2]));
             }
         });
         
@@ -179,7 +180,6 @@ public class MainActivity extends Activity implements OnClickListener{
         mmOutputStream = new DataOutputStream(mmSocket.getOutputStream());
         mmInputStream = mmSocket.getInputStream();
         status.setText("Connection Established");
-        
     }
     
     void send() throws Exception
