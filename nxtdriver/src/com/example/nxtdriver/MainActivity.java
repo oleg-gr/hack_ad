@@ -90,7 +90,7 @@ public class MainActivity extends Activity implements OnClickListener{
     
     @Override
     public void onClick(final View v){
-        new readSensor();
+        sendNXT.execute(sendCmd(v));
     }
     
     public void sendCmd(View v){
