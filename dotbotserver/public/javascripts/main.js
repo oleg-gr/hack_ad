@@ -14,6 +14,16 @@ $(document).ready(function() {
 		}
 	});
 	
+	$('#search').bind('keyup', function(e) {
+	 var code = (e.keyCode ? e.keyCode : e.which);
+ 		if(code == 13) { //Enter keycode
+   			
+   			$('#status').val($('#status').val() + "\n> " + $('#search').val());
+   			$('#search').val("");
+   			
+ 		}
+ 	});
+	
 	/*
 	$("#find").on("click", editor.find());
 	$("#next").on("click", editor.findn());
