@@ -4,10 +4,10 @@
 		<title>DisCoS</title>
 		<link rel="shortcut icon" href="Favicon.ico">
 		<link rel= "stylesheet" type = "text/css" href = "/stylesheets/bootstrap.css"/>
-		<link rel= "stylesheet" type = "text/css" href = "/stylesheets/style.css"/>
 		<link rel="stylesheet" type="text/css" href="/stylesheets/editor.css" />
 		<link rel="stylesheet" type="text/css" href="/stylesheets/codemirror.css" />
 		<link rel="stylesheet" type="text/css" href="/stylesheets/global_styles.css" />
+		<link rel= "stylesheet" type = "text/css" href = "/stylesheets/style.css"/>
 		<script type="text/javascript" src="/javascripts/jquery-1.9.1.min.js"></script>
 		<script type="text/javascript" src="/javascripts/codemirror.js"></script>
 		<script type="text/javascript" src="/javascripts/tnt.js"></script>
@@ -28,24 +28,31 @@
 						<li> <a href = "/info/dcs"> About DSC </a></li>
 						<li> <a href = "/info/tnt"> TNT</a></li>
 						<li> <a href = "/info/dotbot">.bot </a></li>
-						<li> <a href = "/use/select"> Use DisCo </a></li>
 					</ul>
 					<a href="/use/robo" id="login" class="nav-button btn btn-success pull-right">Connect to DisCoS</a>				
 				</div>
 			</div>		
 		</nav>
 		
-	<div id = "texteditor">
-		<p class="center">Start writing your code here:</p>
-			<textarea id="editor" name="editor" placeholder="Start programming here.."></textarea>
-			<div id="controls" class="left">
-				<button class="btn btn-large btn-primary" type="button">Compile!</button>
-					<!--
-					<textarea id="search" rows=1></textarea>
-					<button type="button" id="find">Find</button>
-					<button type="button" id="next">Next</button>
-					<button type="button" id="prev">Previous</button>
-					-->
-					<textarea rows="1" cols="100" id="status"></textarea>
-			</div>
-	</div>
+  <div class="fluid-row">
+    <div class="span6" style="margin-left:10%;">
+      <h3> STDOUT </h3>
+      <textarea id="status" rows="30"></textarea>
+      <h4> Console </h4>
+      <textarea id="search" rows=1></textarea>
+    </div>
+    <div class="span6">
+      <h3>Start writing your code here:</h3>
+      <textarea id="editor" name="editor" placeholder="Start programming here.."></textarea>
+      <div id="controls" class="left">
+        <button id="compile" class="btn btn-large btn-primary" type="button" style="margin-top:10px;">Compile!</button>
+              <!--
+              <button type="button" id="find">Find</button>
+              <button type="button" id="next">Next</button>
+              <button type="button" id="prev">Previous</button>
+              -->
+      </div>
+    </div>
+  </div>
+  </body>
+</html>

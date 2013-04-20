@@ -9,13 +9,10 @@ var main =
 $(document).ready(function() {
 	main.init();
 	$("#compile").on("click", function() {
-		if (syntax.check(editor.doc) && !done) {
+		if (syntax.check(editor.doc)) {
 			parser.parse(editor.doc);
-		}	
-		
-		$("#console").append("\\n" + $("#controls").val());
+		}
 	});
-	
 	
 	/*
 	$("#find").on("click", editor.find());

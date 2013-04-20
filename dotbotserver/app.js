@@ -49,7 +49,7 @@ app.post('/io/alive', io.alive);
 app.get('/io/alive', io.checkAlive);
 app.get('/info/:page', pages.get);
 app.get('/use/select', pages.select);
-app.get('/use', pages.use);
+app.get('/use/robo', pages.use);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
