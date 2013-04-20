@@ -70,23 +70,6 @@
         android:text="Left" />
 
     <Button
-        android:id="@+id/scan"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/stop"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="33dp"
-        android:text="Scan" />
-
-    <TextView
-        android:id="@+id/sensor"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/scan"
-        android:layout_alignLeft="@+id/connect"
-        android:text="Sensor" />
-
-    <Button
         android:id="@+id/read"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -94,5 +77,14 @@
         android:layout_alignBottom="@+id/reverse"
         android:layout_alignLeft="@+id/sensor"
         android:text="Read" />
+
+    <TextView
+        android:id="@+id/sensor"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/status"
+        android:layout_below="@+id/reverse"
+        android:layout_marginTop="36dp"
+        android:text="Sensor" />
 
 </RelativeLayout>
