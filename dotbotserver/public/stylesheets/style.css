@@ -85,7 +85,7 @@ button {
 #HALicons {
 
 	position: relative;
-	top: 80px;
+	top: 150px;
 	margin: 120px;
 	text-align: center;
 }
@@ -130,7 +130,7 @@ button {
 }
 
 #icons img {
-	margin:0px 100px 50px 0px;
+	margin:0px 50px 50px 70px;
 }
 .span3{ 
 	text-align: center;
@@ -140,7 +140,7 @@ button {
 
 .span4 {
 	text-align: center;
-	margin: 0px 20px 0px;
+	margin: 0px 40px 0px;
 	width: 300px;
 }
 video {
@@ -195,4 +195,10 @@ video {
 	position: relative;
 	left: -200px;
 	top: 200px;
+}
+
+#texteditor {
+	position:relative;
+	top: 100px;
+	margin: 0px 20px 20px 20px;
 }

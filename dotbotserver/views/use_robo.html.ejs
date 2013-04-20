@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<title>DisCoS</title>
-	
+		<link rel="shortcut icon" href="Favicon.ico">
 		<link rel= "stylesheet" type = "text/css" href = "/stylesheets/bootstrap.css"/>
 		<link rel= "stylesheet" type = "text/css" href = "/stylesheets/style.css"/>
 		
@@ -11,36 +11,34 @@
 	<body>
 	<nav>
 			<div class = "navbar">
-				<ul class = "nav">
-					<li class = "active">
-						<a href = "/"> Home </a>
-					</li>
-					<li> <a href = "/info/dcs"> About DSC </a></li>
-					<li> <a href = "/info/tnt"> TNT</a></li>
-					<li> <a href = "/info/dotbot">.bot </a></li>
-					<li> <a href = "/use/select"> Use DisCo </a></li>
-					
-				</ul>		
+				<div class = "navbar-inner">
+					<a class = "brand" > DisCoS </a>
+					<ul class = "nav">
+						<li class = "active"> <a href = "/"> Home </a></li>
+						<li> <a href = "/info/dcs"> About DSC </a></li>
+						<li> <a href = "/info/tnt"> TNT</a></li>
+						<li> <a href = "/info/dotbot">.bot </a></li>
+						<li> <a href = "/use/select"> Use DisCo </a></li>
+					</ul>
+				</div>
+			</div>
+						
 				<p>	
 						 <button class="btn btn-large btn-primary" type="button">Connect</button>
 				</p>
 		</nav>
 		
-	
-	<div id = "livestream">
-		<video width="320" height="240" controls autoplay>
-			<source src="movie.ogg" type="video/ogg">
-			<source src="movie.mp4" type="video/mp4">
-			 <source src="movie.webm" type="video/webm">
-			<object data="movie.mp4" width="320" height="240">
-			 <embed width="320" height="240" src="movie.swf">
-			</object>
-		</video>
+	<div id = "texteditor">
+		<p class="center">Start writing your code here:</p>
+			<textarea id="editor" name="editor" placeholder="Start programming here.."></textarea>
+			<div id="controls" class="left">
+				<button type="button" id="compile">Compile!</button><br/>
+					<!--
+					<textarea id="search" rows=1></textarea>
+					<button type="button" id="find">Find</button>
+					<button type="button" id="next">Next</button>
+					<button type="button" id="prev">Previous</button>
+					-->
+					<textarea rows="1" cols="100" id="status"></textarea>
+			</div>
 	</div>
-	<div id = "userinput">
-		<textarea rows="12"></textarea>
-	</div>
-	<div id = "console">
-		<input class="input-xxlarge" type="text" placeholder="Console is here">
-	</div>
-	
