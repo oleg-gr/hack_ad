@@ -1,10 +1,14 @@
 var mongo = require('mongodb');
 
+var mongoUri = process.env.MONGOLAB_URI || 
+  process.env.MONGOHQ_URL || 
+  'localhost'; 
+
 var Server = mongo.Server,
     Db = mongo.Db,
     BSON = mongo.BSONPure;
 
-var server = new Server('localhost', 27017, {});
+var server = new Server(mongoUri, 27017, {});
 db = new Db('disco', server, {w: 1});
 db.open(function(err, db) {
     if(!err) {

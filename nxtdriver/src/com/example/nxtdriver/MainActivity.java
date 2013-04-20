@@ -8,10 +8,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
-import android.os.Bundle;
 import android.view.View;
-import android.widget.TextView;
-import android.widget.Button;
+import android.view.View.OnClickListener;
 import android.util.Log;
 
 import java.io.DataOutputStream;
@@ -21,7 +19,7 @@ import java.util.Set;
 import java.util.UUID;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements OnClickListener{
 
 	TextView status;
 	BluetoothAdapter mBluetoothAdapter;
@@ -45,7 +43,6 @@ public class MainActivity extends Activity {
 		Button rightButton = (Button)findViewById(R.id.right);
 		Button connectButton = (Button)findViewById(R.id.connect);
 		Button stopButton = (Button)findViewById(R.id.stop);
-		Button scanButton = (Button)findViewById(R.id.scan);
 		Button readButton = (Button)findViewById(R.id.read);
 
 		status = (TextView)findViewById(R.id.status);
@@ -68,25 +65,66 @@ public class MainActivity extends Activity {
                     {
                         status.setText("Waiting...");
                         byte[] b = new byte[3];
-                        int res;
                         try {
                             mmInputStream.read(b);
-                            sensor.setText(String.valueOf(b[0])+" "+String.valueOf(b[1])+ " "+String.valueOf(b[2]));
+                            sensor.setText(String.valueOf(b[2]));
                         } catch (Exception e) {
-                            res = -1;
                             String error = e.getMessage();
                             Log.v("nxtdriver", error);
                             sensor.setText("Failed to read");
                         }
                     }
 		});
-
-		forwardButton.setOnClickListener(new View.OnClickListener());
-		reverseButton.setOnClickListener(new View.OnClickListener());
-		leftButton.setOnClickListener(new View.OnClickListener());
-		rightButton.setOnClickListener(new View.OnClickListener());
-		scanButton.setOnClickListener(new View.OnClickListener());
+/*
+		Button forwardButton = (Button)findViewById(R.id.forward);
+		Button reverseButton = (Button)findViewById(R.id.reverse);
+		Button leftButton = (Button)findViewById(R.id.left);
+		Button rightButton = (Button)findViewById(R.id.right);
+		Button connectButton = (Button)findViewById(R.id.connect);
+		Button stopButton = (Button)findViewById(R.id.stop);
+		Button readButton = (Button)findViewById(R.id.read);*/
+		
+		forwardButton.setOnClickListener(this);
+		reverseButton.setOnClickListener(this);
+		leftButton.setOnClickListener(this);
+		rightButton.setOnClickListener(this);
+		stopButton.setOnClickListener(this);
 	}
+		
+		@Override
+		public void onClick(View v){
+			try{
+		 switch(v.getId())
+		 {
+		   case R.id.forward:
+		   { 
+		     send(8, "forward");
+		     break;
+		   }
+
+		   case R.id.reverse:
+		   { 
+		     send(2, "reverse");
+		     break;
+		   }
+		   case R.id.left:
+		   { 
+		     send(4, "left");
+		     break;
+		   }
+		   case R.id.right:
+		   { 
+		     send(6, "right");
+		     break;
+		   }
+		   case R.id.stop:
+		   { 
+		     send(5, "stop");
+		     break;
+		   }
+
+		 }}catch(Exception e){}
+		}
 
 	void findBT() throws Exception
 	{
@@ -128,21 +166,10 @@ public class MainActivity extends Activity {
 
 	}
 
-
-
-        void send(int code, String msg) throws Exception
-        {
-            mmOutputStream.writeByte(code);
-            mmOutputStream.writeByte(code);
-            status.setText(msg);
-        }
-        
-        public void onClick(View v, int code, String msg)
-        {            
-            try {
-                send(code, msg);
-
-            } catch (Exception e) {
-            }
-        }
+    void send(int code, String msg) throws Exception
+    {
+        mmOutputStream.writeByte(code);
+        mmOutputStream.writeByte(code);
+        status.setText(msg);
+    }   
 }

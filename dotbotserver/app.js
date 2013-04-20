@@ -8,7 +8,8 @@ var express = require('express'),
     user = require('./routes/user'), 
     io = require('./routes/io'),
     http = require('http'), 
-    path = require('path');
+    path = require('path'),
+    pages = require('./routes/pages');
 
 var app = express();
 
@@ -37,7 +38,7 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
-app.get('/', routes.index);
+app.get('/', pages.index);
 app.get('/users', user.list);
 app.get('/io', io.pull);
 app.get('/io/list', io.listDB);
@@ -46,6 +47,9 @@ app.get('/io/resetall', io.resetAll);
 app.get('/io/reset', io.resetStream);
 app.post('/io/alive', io.alive);
 app.get('/io/alive', io.checkAlive);
+app.get('/info/:page', pages.get);
+app.get('/use/select', pages.select);
+app.get('/use', pages.use);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
