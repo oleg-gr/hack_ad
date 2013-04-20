@@ -77,10 +77,9 @@ public class MainActivity extends Activity implements OnClickListener{
             public void onClick(View v) {
                 readNXT.execute( new Runnable() {
                     public void run(){
-                        status.setText("Waiting...");
+                        //status.setText("Waiting...");
                         try {
                             mmInputStream.read(received);
-                            //Log.v("nxtdriver", String.valueOf(b[2]));
                         } catch (Exception e) {
                             String error = e.getMessage();
                             Log.v("nxtdriver", error);
@@ -88,7 +87,7 @@ public class MainActivity extends Activity implements OnClickListener{
                         }
                     }
                 });
-                sensor.setText(String.valueOf(received[2]));
+                sensor.setText("Received: " + String.valueOf(received[2]));
             }
         });
         
@@ -123,14 +122,14 @@ public class MainActivity extends Activity implements OnClickListener{
                 }
                 case R.id.left:
                 {
-                    motora = 127;
-                    motorb = -127;
+                    motora = 40;
+                    motorb = -40;
                     break;
                 }
                 case R.id.right:
                 {
-                    motora = -127;
-                    motorb = 127;
+                    motora = -40;
+                    motorb = 40;
                     break;
                 }
                 case R.id.stop:
