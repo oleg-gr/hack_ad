@@ -15,20 +15,22 @@ var parser =
 			});
 		parser.defs = {};
 		parser.main = parser.buildJSON(parser.code);
-		console.log(JSON.stringify(parser.main));
-		console.log(JSON.stringify(parser.defs));
+		parser.superJSON = {"status":"", "definitions":parser.defs, "main":parser.main};
+		console.log(JSON.stringify(parser.superJSON));
 	},
 	
 	buildJSON: function(code)
 	{
 		var temp_code = [];
-		parser.ops = {"=":"equals", "+": "add", "-":"sub", "*":"mult", "/":"div", "%":"mod"};
+		parser.ops = {"!":"not", "|":"or", "&":"and", "<":"less_than", ">":"greater_than", "==":"equals", "=":"assign", "+": "add", "-":"sub", "*":"mult", "/":"div", "%":"mod"};
 		for (var i = 0; i<code.length; i++)
 		{
 			for (var j = 0; j<code[i].length; j++)
 			{
-				if (code[i][j] == "define")
+				var block_switch = {"define":1, "while":2, "if":3};
+				if (block_switch.hasOwnProperty(code[i][j]))
 				{
+					var loop_type = block_switch[code[i][j]];
 					var pf = parser.parseFunction(code[i][++j]);
 					var block = [];
 					i++;
@@ -38,10 +40,11 @@ var parser =
 					}
 					for (var key in pf)
 					{
-						parser.defs[key]={"args": pf[key], "code":parser.buildJSON(block)};
+						if(loop_type==1) parser.defs[key]={"args": pf[key], "code":parser.buildJSON(block)};
+						else if (loop_type==2) temp_code.push({"while":{"condition": pf, "code":parser.buildJSON(block)}});
+						else if (loop_type==3) temp_code.push({"if":{"condition": pf, "code":parser.buildJSON(block)}});
 					}
 				}
-				else if (code[i][j] == "while");
 				else temp_code.push(parser.parseFunction(code[i][j]));
 			}
 		}
@@ -105,7 +108,8 @@ var parser =
 					split_ex.push(temp_ex);
 					temp_ex = "";
 				}
-				split_ex.push(code[i]);
+				if(code[i]=="=" && code[i+1]=="=") split_ex.push(code[i]+code[++i]);
+				else split_ex.push(code[i]);
 			}
 			else temp_ex += code[i];
 		}
@@ -117,7 +121,7 @@ var parser =
 	{
 		var postfix = [];
 		var stack = [];
-		if(ex[1]=="=") start=2;
+		if(ex[1]=="=") start=2
 		else start=0;
 		for (var i = start; i<ex.length; i++)
 		{
@@ -136,7 +140,6 @@ var parser =
 		{
 			postfix.push(stack.pop());
 		}
-
 		for (var i = 0; i<postfix.length; i++)
 		{
 			if (parser.ops.hasOwnProperty(postfix[i]))
@@ -151,7 +154,7 @@ var parser =
 			}
 		}
 		if (start==0) return stack.pop();
-		else return "equals("+ex[0]+","+stack.pop()+")";
+		else return "assign("+ex[0]+","+stack.pop()+")";
 				
 	},
 	
@@ -173,6 +176,7 @@ var parser =
 		line = line.replace(/#+.*/g, "");
 		line = line.replace(/\s*([/*/+-//=]+)\s*/g, "$1");
 		line = line.replace(/\s+/g, " ");
+		line = line.replace(/"(.*)?"/, '^$1');
 		line = line.split(/\s/);
 		return line;
 	},
