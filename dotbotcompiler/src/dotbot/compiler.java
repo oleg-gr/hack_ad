@@ -13,7 +13,7 @@ public class compiler {
 
 
 	public static void main (String args[]) throws IOException {
-		
+
 		//System.out.println(Boolean.toString(!("true".equals("false"))));
 
 		File file = new File("test.txt");
@@ -83,23 +83,48 @@ public class compiler {
 		break;
 
 		case "greater_than": return greater((String) function.get("arg0"),(String) function.get("arg1"));
-		
+
 		case "less_than": return greater((String) function.get("arg1"),(String) function.get("arg0"));
 
 		case "equals": return equals((String) function.get("arg1"),(String) function.get("arg0"));
-			
+
 		case "and": return and((String) function.get("arg0"),(String) function.get("arg1"));
-		
+
 		case "or": return or((String) function.get("arg0"),(String) function.get("arg1"));
-		
+
 		case "not": return not((String) function.get("arg0"));
-		
+
 		case "mult": return mult((String) function.get("arg0"),(String) function.get("arg1"));
-		
+
 		case "div": return div((String) function.get("arg0"),(String) function.get("arg1"));
-		
+
 		case "mod": return mod((String) function.get("arg0"),(String) function.get("arg1"));
+
+		case "forward": forward((String) function.get("arg0"));
+		break;
+
+		case "fd": forward((String) function.get("arg0"));
+		break;
 		
+		case "backward": backward((String) function.get("arg0"));
+		break;
+		
+		case "bd": backward((String) function.get("arg0"));
+		break;
+		
+		case "left": left((String) function.get("arg0"));
+		break;
+		
+		case "lt": left((String) function.get("arg0"));
+		break;
+		
+		case "right": right((String) function.get("arg0"));
+		break;
+		
+		case "rt": right((String) function.get("arg0"));
+		break;
+
+
 		default: 
 			if (d.has(name)) {
 				//put all arguments into an array
@@ -149,6 +174,30 @@ public class compiler {
 
 	}
 
+	private static void forward(String x) {
+		
+		//implement forward function, x is distance or duration
+		
+	}
+	
+	private static void backward(String x) {
+		
+		//implement forward function, x is distance or duration
+		
+	}
+	
+	private static void left(String x) {
+		
+		//implement forward function, x is angles or duration
+		
+	}
+	
+	private static void right(String x) {
+		
+		//implement forward function, x is angles or duration
+		
+	}
+	
 	private static void assign(String x, String y) {
 		//System.out.println("assigning "+x+" to "+y);
 		if (getScope().has(x)) {
@@ -172,19 +221,19 @@ public class compiler {
 		return Integer.toString(Integer.parseInt(lookup(x))-Integer.parseInt(lookup(y)));
 
 	}
-	
+
 	private static String mult(String x, String y) {
 
 		return Integer.toString(Integer.parseInt(lookup(x))*Integer.parseInt(lookup(y)));
 
 	}
-	
+
 	private static String div(String x, String y) {
 
 		return Integer.toString(Integer.parseInt(lookup(x))/Integer.parseInt(lookup(y)));
 
 	}
-	
+
 	private static String mod(String x, String y) {
 
 		return Integer.toString(Integer.parseInt(lookup(x)) % Integer.parseInt(lookup(y)));
@@ -197,7 +246,7 @@ public class compiler {
 		return ""; //or x
 
 	}
-	
+
 	private static String greater(String x, String y) {
 
 		return Boolean.toString(Integer.parseInt(lookup(x))>Integer.parseInt(lookup(y)));
@@ -209,25 +258,25 @@ public class compiler {
 		return Boolean.toString(Integer.parseInt(lookup(x))==Integer.parseInt(lookup(y)));
 
 	}
-	
+
 	private static String and(String x, String y) {
 
 		return Boolean.toString(x.equals("true") && y.equals("true"));
 
 	}
-	
+
 	private static String or(String x, String y) {
 
 		return Boolean.toString(x.equals("true") || y.equals("true"));
 
 	}
-	
+
 	private static String not(String x) {
 
 		return Boolean.toString(!(x.equals("true")));
 
 	}
-	
+
 	private static String lookup(String x) {
 		//System.out.println("lookup: "+x);
 		if (x.length() > 0) {
