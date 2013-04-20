@@ -199,5 +199,39 @@ video {
 #texteditor {
 	position:relative;
 	top: 100px;
-	margin: 0px 20px 20px 20px;
+	width: 300px;
+	float:right;
+
+}
+
+.CodeMirror {
+	height: 500px;
+	width: 700px;
+	float: right;
+}
+
+#controls.button {
+	position: relative;
+	float: right;
+	left: 700px;
+	top: 550px;
+}
+textarea {
+	position: relative;
+	top: 130px;
+	height: 60px;
+	width: 1300px;
+	left: 100px;
+}
+
+p.center {
+margin: -30px 0 -10px;
+float: right;
+margin-right: 520px;
+}
+
+#console{
+	position: relative;
+	float: left;
+	width: 440px;
 }

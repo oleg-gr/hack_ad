@@ -57,10 +57,12 @@ public class Compiler {
 	}
 	
 	public void compile(JSONArray code) {
-
+		
+		JSONArray copy = new JSONArray(code.toString());
+		
 		for (int i = 0; i < code.length(); i++) {
-
-			evaluateObject(code.getJSONObject(i));
+			
+			evaluateObject(copy.getJSONObject(i));
 
 		}
 
@@ -82,27 +84,44 @@ public class Compiler {
 		//System.out.println(function.toString());
 
 		JSONArray keys = function.names();
-		if (keys != null && !name.equals("if")) {
+		JSONObject copy = new JSONObject(function.toString());
+		if (keys != null && !name.equals("if") &&!name.equals("while")) {
 			for (int i = 0; i < keys.length(); i++) { 
 				String temp_str = keys.getString(i);
 				if (function.get(temp_str).getClass() != CHECK.getClass()) {
-					function.put(temp_str, evaluateObject(function.getJSONObject(temp_str)));
+					
+					function.put(temp_str, evaluateObject(copy.getJSONObject(temp_str)));
 
 				}
 
 			}
 		}
-		else {
+		else if (name.equals("if")) {
 			
-			System.out.println("if!?");
-			
-			if (evaluateObject(function.getJSONObject("condition")).equals("true")) {
+			if (evaluateObject(copy.getJSONObject("condition")).equals("true")) {
 				
-				this.compile(function.getJSONArray("code"));
+				this.compile(copy.getJSONArray("code"));
+				
+			}
+			else {
+				
+				this.compile(copy.getJSONArray("else"));
 				
 			}
 			
 		}
+		
+		else if (name.equals("while")) {
+			
+			while (evaluateObject(copy.getJSONObject("condition")).equals("true")){
+				
+				this.compile(copy.getJSONArray("code"));
+				
+				
+			}
+			
+		}
+		
 		//System.out.println(jsonObject.toString());
 		switch (name) {
 

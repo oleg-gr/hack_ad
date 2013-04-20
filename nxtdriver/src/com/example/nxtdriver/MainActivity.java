@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends Activity implements OnClickListener{
     
@@ -100,7 +101,7 @@ public class MainActivity extends Activity implements OnClickListener{
     
     @Override
     public void onClick(final View v){
-        sendNXT.execute(new Runnable() {public void run() {sendCmd(v);}});
+        sendNXT.scheduleAtFixedRate(new Runnable() {public void run() {sendCmd(v);}}, 500, TimeUnit.MILLISECONDS);
     }
     
     public void sendCmd(View v){

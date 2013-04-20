@@ -1,1 +1,1 @@
-{"status":"","definitions":{},"main":[{"assign":{"arg0":"x","arg1":{"add":{"arg0":"5","arg1":"2"}}}},{"if":{"condition":{"less_than":{"arg0":"x","arg1":"8"}},"code":[{"print":{"arg0":"x"}}]}}]} 
+{"status":"","definitions":{},"main":[{"assign":{"arg0":"x","arg1":{"add":{"arg0":"2","arg1":"5"}}}},{"while":{"condition":{"less_than":{"arg0":"x","arg1":"10"}},"code":[{"assign":{"arg0":"x","arg1":{"add":{"arg0":"x","arg1":"1"}}}},{"print":{"arg0":"x"}}]}}]} 

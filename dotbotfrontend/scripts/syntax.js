@@ -65,7 +65,7 @@ var syntax = {
         		}
         	}
         	
-        	if (line.indexOf("end") != -1) {
+        	if (line.indexOf("end") != -1 && line.indexOf("\"") == -1) {
        			depth--;
         		
         		if (depth < 0) {
