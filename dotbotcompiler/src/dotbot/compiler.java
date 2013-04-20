@@ -5,11 +5,15 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class compiler {
+public class Compiler {
 
-	static String CHECK = "";
+	String CHECK = "";
 
-	static ArrayList <JSONObject> variables = new ArrayList <>(); 
+	ArrayList <JSONObject> variables = new ArrayList <>(); 
+
+	JSONObject definitions;
+	JSONArray main;
+	int count = 0;
 
 
 	public static void main (String args[]) throws IOException {
@@ -17,41 +21,54 @@ public class compiler {
 		//System.out.println(Boolean.toString(!("true".equals("false"))));
 
 		File file = new File("test.txt");
-		String content = null;
+		String jsonstring = null;
 		try {
 			FileReader reader = new FileReader(file);
 			char[] chars = new char[(int) file.length()];
 			reader.read(chars);
-			content = new String(chars);
+			jsonstring = new String(chars);
 			reader.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		compile (content);
+		Compiler compiler = new Compiler (jsonstring);  
+		compiler.compile();
 
 	}
 
-	private static void compile (String x) {
 
-		JSONObject superJSON = new JSONObject(x);
+	public Compiler(String jsonstring) {
 
-		JSONObject definitions = superJSON.getJSONObject("definitions");		
+		JSONObject superJSON = new JSONObject(jsonstring);
 
-		JSONArray main = superJSON.getJSONArray("main");
+		this.definitions = superJSON.getJSONObject("definitions");		
+
+		this.main = superJSON.getJSONArray("main");
 
 
 		variables.add(new JSONObject());
 
+	}
 
-		for (int i = 0; i < main.length(); i++) {
+	public void compile() {
 
-			evaluateObject(main.getJSONObject(i), definitions);
+		for (int i = 0; i < this.main.length(); i++) {
+
+			evaluateObject(this.main.getJSONObject(i), this.definitions);
 
 		}
 
 	}
 
-	private static String evaluateObject(JSONObject jsonObject, JSONObject d) {
+	public void next() {
+		
+		evaluateObject(this.main.getJSONObject(this.count++), this.definitions);
+
+	}
+
+
+
+	private String evaluateObject(JSONObject jsonObject, JSONObject d) {
 		String name = (String) jsonObject.keys().next();
 
 		JSONObject function = jsonObject.getJSONObject(name);
@@ -105,22 +122,22 @@ public class compiler {
 
 		case "fd": forward((String) function.get("arg0"));
 		break;
-		
+
 		case "backward": backward((String) function.get("arg0"));
 		break;
-		
+
 		case "bd": backward((String) function.get("arg0"));
 		break;
-		
+
 		case "left": left((String) function.get("arg0"));
 		break;
-		
+
 		case "lt": left((String) function.get("arg0"));
 		break;
-		
+
 		case "right": right((String) function.get("arg0"));
 		break;
-		
+
 		case "rt": right((String) function.get("arg0"));
 		break;
 
@@ -174,31 +191,31 @@ public class compiler {
 
 	}
 
-	private static void forward(String x) {
-		
+	private void forward(String x) {
+
 		//implement forward function, x is distance or duration
-		
+
 	}
-	
-	private static void backward(String x) {
-		
+
+	private  void backward(String x) {
+
 		//implement forward function, x is distance or duration
-		
+
 	}
-	
-	private static void left(String x) {
-		
+
+	private  void left(String x) {
+
 		//implement forward function, x is angles or duration
-		
+
 	}
-	
-	private static void right(String x) {
-		
+
+	private  void right(String x) {
+
 		//implement forward function, x is angles or duration
-		
+
 	}
-	
-	private static void assign(String x, String y) {
+
+	private  void assign(String x, String y) {
 		//System.out.println("assigning "+x+" to "+y);
 		if (getScope().has(x)) {
 			//System.out.println("looked up and present");
@@ -210,74 +227,74 @@ public class compiler {
 		//System.out.println(variables.toString());
 	}
 
-	private static String add(String x, String y) {
+	private  String add(String x, String y) {
 
 		return Integer.toString(Integer.parseInt(lookup(x))+Integer.parseInt(lookup(y)));
 
 	}
 
-	private static String sub(String x, String y) {
+	private  String sub(String x, String y) {
 
 		return Integer.toString(Integer.parseInt(lookup(x))-Integer.parseInt(lookup(y)));
 
 	}
 
-	private static String mult(String x, String y) {
+	private  String mult(String x, String y) {
 
 		return Integer.toString(Integer.parseInt(lookup(x))*Integer.parseInt(lookup(y)));
 
 	}
 
-	private static String div(String x, String y) {
+	private  String div(String x, String y) {
 
 		return Integer.toString(Integer.parseInt(lookup(x))/Integer.parseInt(lookup(y)));
 
 	}
 
-	private static String mod(String x, String y) {
+	private  String mod(String x, String y) {
 
 		return Integer.toString(Integer.parseInt(lookup(x)) % Integer.parseInt(lookup(y)));
 
 	}
 
-	private static String print(String x) {
+	private  String print(String x) {
 		//System.out.println("printing: ");
 		System.out.println(lookup(x)); //change to real printing
 		return ""; //or x
 
 	}
 
-	private static String greater(String x, String y) {
+	private  String greater(String x, String y) {
 
 		return Boolean.toString(Integer.parseInt(lookup(x))>Integer.parseInt(lookup(y)));
 
 	}
 
-	private static String equals(String x, String y) {
+	private  String equals(String x, String y) {
 
 		return Boolean.toString(Integer.parseInt(lookup(x))==Integer.parseInt(lookup(y)));
 
 	}
 
-	private static String and(String x, String y) {
+	private  String and(String x, String y) {
 
 		return Boolean.toString(x.equals("true") && y.equals("true"));
 
 	}
 
-	private static String or(String x, String y) {
+	private  String or(String x, String y) {
 
 		return Boolean.toString(x.equals("true") || y.equals("true"));
 
 	}
 
-	private static String not(String x) {
+	private  String not(String x) {
 
 		return Boolean.toString(!(x.equals("true")));
 
 	}
 
-	private static String lookup(String x) {
+	private  String lookup(String x) {
 		//System.out.println("lookup: "+x);
 		if (x.length() > 0) {
 			if (x.substring(0, 1).equals("^")) {
@@ -300,7 +317,7 @@ public class compiler {
 		return x;
 	}
 
-	private static JSONObject getScope() {
+	private  JSONObject getScope() {
 
 		return variables.get(variables.size()-1);
 
