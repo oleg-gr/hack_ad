@@ -1,8 +1,183 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+body{
+	height: 1500px;
+	margin: 0px 20px 20px 0px;
 }
 
-a {
-  color: #00B7FF;
+
+#masthead{
+position:relative;
+top: 70px;
+height:400px;
+margin: auto;
+width: 1024px;
+
+}
+
+.textbox{
+	position:absolute;
+	top: 90px;
+	left: 650px;
+	line-height: 30px;
+	width:300px;
+	
+	
+}
+
+
+.logo{
+	position:absolute;
+	left: 100px;
+	top: 80px;
+	width: 381px;
+	height: 262px;
+}
+.dotbotlogo {
+	position:absolute;
+	left: 100px;
+	top: 140px;
+	
+}
+
+nav ul li{
+	margin: 0px 60px 0px;
+	width: 100px;
+	text-align: center;
+}
+
+
+button {
+	position: relative;
+	float:right;
+	right: 100px;
+	
+}
+
+#viewdemo{
+	position: relative;
+	top: 80px;
+	float:left;
+	left: 780px;
+}
+#tagline {
+	position: relative;
+	top: 180px;
+	margin-right:200px;
+	margin-left:300px;
+	text-align: center;
+}
+#titles {
+	position: relative;
+	top: 250px;
+	margin-right:50px;
+	margin-left:150px;
+	
+	
+}
+
+#icons {
+	position: relative;
+	top: 80px;
+
+	margin-left:120px;
+	text-align: center;
+}
+
+
+
+#description {
+	position:relative;
+	top: 40px;
+}
+
+#description h3 {
+
+	position: relative;
+	top: 100px;
+	left: 170px;
+	width:300px;
+	text-align:center;
+}
+
+#description ul li {
+	position: relative;
+	top: 100px;
+	left: 150px;
+	width: 300px;
+	margin: 0px 20px 0px;
+	text-align: left;
+	font-size: 20px;
+	line-height: 30px;
+}
+
+
+
+.row {
+	height: 300px;
+	line-height:300px;
+}
+
+.span2{
+	height: 150px;
+	text-align:center;
+	margin: 0px 35px 0px;	
+	
+}
+
+#icons img {
+	margin: 0px 50px 50px 0px;
+}
+.span3{ 
+	text-align: center;
+	margin: 0px -20px 0px;
+	width: 300px;
+}
+
+.span4 {
+	text-align: center;
+	margin: 0px 20px 0px;
+}
+video {
+	position: relative;
+	margin: 0px 350px 0px;
+	
+}
+
+#robottitle{
+	position:relative;
+	top:70px;
+	left: 35%;
+	float:left;
+	text-align: center;
+}
+#robotimages {
+	position:relative;
+	float:left;
+	margin:auto;
+	
+	left: 50px;
+	top: 100px;
+	
+}
+
+
+#livestream  {
+	position:relative;
+	float:left;
+	top: 100px;
+	
+	
+}
+
+#userinput {
+	position:relative;
+	top:100px;
+	float:right;
+	right: 350px;
+}
+
+#console {
+	position:relative;
+	top: 200px;
+	left: 350px;
+	
 }
