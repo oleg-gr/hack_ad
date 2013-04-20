@@ -9,7 +9,7 @@ var Server = mongo.Server,
     BSON = mongo.BSONPure;
 
 var server = new Server(mongoUri, 27017, {});
-db = new Db('disco', server, {w: 1});
+db = new Db('disco', server, {w: 1, safe: true});
 db.open(function(err, db) {
     if(!err) {
         console.log("Connected to 'disco' database");
