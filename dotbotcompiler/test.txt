@@ -1,0 +1,1 @@
+{"status":"OK","definitions":{"sup":{"args":{"arg0":"x"},"code":[{"assign":{"arg0":x,"arg1":{"add":{"arg0":"x", "arg1":"1"}}}},{"print":{"arg0":"x"}}]}},"main":[{"assign":{"arg0":"y","arg1":"1"}},{"sup":{"arg0":"y"}}]}

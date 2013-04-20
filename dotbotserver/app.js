@@ -6,8 +6,7 @@
 var express = require('express'), 
     routes = require('./routes'), 
     user = require('./routes/user'), 
-    checkDB = require('./routes/checkDB'),
-    siteIO = require('./routes/siteIO'),
+    io = require('./routes/io'),
     http = require('http'), 
     path = require('path');
 
@@ -39,15 +38,14 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', routes.index);
-app.get('/checkDB', checkDB.show);
 app.get('/users', user.list);
-app.get('/io', siteIO.pull);
-app.get('/io/list', siteIO.listDB);
-app.post('/io', siteIO.push);
-app.get('/io/resetall', siteIO.resetAll);
-app.get('/io/reset', siteIO.resetStream);
-app.post('/io/alive', siteIO.alive);
-app.get('/io/alive', siteIO.checkAlive);
+app.get('/io', io.pull);
+app.get('/io/list', io.listDB);
+app.post('/io', io.push);
+app.get('/io/resetall', io.resetAll);
+app.get('/io/reset', io.resetStream);
+app.post('/io/alive', io.alive);
+app.get('/io/alive', io.checkAlive);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
