@@ -125,6 +125,30 @@ var alive = function(msg, res){
   });
 };
 
+var checkAlive = function(res){
+  timeNow = new Date().getTime();
+  console.log("Checking which are alive");
+  db.collection("alive", function(err, collection){
+    collection.find().toArray(function(err, items){
+      if (err){
+        res.write(JSON.stringify({status: 500, err: "Can't select db"}));
+      }
+      result = {status: 200}
+      for (var i=0; i<items.length; i++){
+        if (timeNow - items[i].time_received < 60000){
+          // last response was within a minute
+          result[items[i].id] = true;
+        } else {
+          result[items[i].id] = false;
+        }
+      }
+      res.write(JSON.stringify());
+      console.log(JSON.stringify(result));
+      res.end();
+    });
+  });
+}
+
 exports.pull = function(req, res){
   res.writeHead(200, {"Content-Type": "application/json"});
   if (req.query.from == "master"){
