@@ -3,7 +3,7 @@ exports.get = function(req, res){
 };
 
 exports.index = function(req, res){
-  res.render('info.html.ejs');
+  res.render('index.html.ejs');
 };
 
 exports.use = function(req, res){

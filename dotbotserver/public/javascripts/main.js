@@ -18,7 +18,7 @@ $(document).ready(function() {
 	 var code = (e.keyCode ? e.keyCode : e.which);
  		if(code == 13) { //Enter keycode
    			
-   			$('#status').val($('#status').val() + "\n> " + $('#search').val());
+   			$('#status').val($('#status').val() + "> " + $('#search').val());
    			$('#search').val("");
    			
  		}

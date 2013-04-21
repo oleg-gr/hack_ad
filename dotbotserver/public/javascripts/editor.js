@@ -14,7 +14,7 @@ var editor =
 			styleActiveLine: true
 			});
 			
-		this.doc.setValue("#Program\ndefine square(x) do\n\ti=0\n\twhile i<4\n\t\tfd(x)\n\t\tlt(90)\n\t\ti=i+1\n\tend\nend\nsquare(40)");
+		this.doc.setValue("#Program\ndefine patrol(x) do\n\tforward(x)\n\tlt(180)\n\tforward(x)\n\trt(180)\nend");
 	},
 /*		
 	find:function() {
