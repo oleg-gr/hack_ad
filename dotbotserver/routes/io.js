@@ -70,22 +70,24 @@ var addToDB = function(obj, collectionName, res){
 
 var listDB = function(res){
   console.log("Listing DB");
+  resp = {};
   db.collection("in", function(err, collection){
     collection.find().toArray(function(err, items){
-      res.write(JSON.stringify({inp: items}));
+      resp.inp = items;
       console.log(JSON.stringify({inp: items}));
     });
   });
   db.collection("out", function(err, collection){
     collection.find().toArray(function(err, items){
-      res.write(JSON.stringify({out: items}));
+      resp.out = items;
       console.log(JSON.stringify({out: items}));
     });
   });
   db.collection("alive", function(err, collection){
     collection.find().toArray(function(err, items){
-      res.write(JSON.stringify({alive: items}));
+      resp.alive = items;
       console.log(JSON.stringify({alive: items}));
+      res.write(JSON.stringify(resp));
       res.end();
     });
   });

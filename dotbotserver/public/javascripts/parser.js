@@ -1,6 +1,6 @@
 var parser = 
 {
-	parse: function(doc)
+	parse: function(doc, callback)
 	{
 		parser.json = {};
 		parser.code = [];
@@ -9,14 +9,14 @@ var parser =
 				parsed_line = parser.format(line.text);
 				for (var i = 0; i<parsed_line.length; i++)
 				{
-					if (parsed_line[i] == "") parsed_line = parsed_line.splice(i, 1)
+					if (parsed_line[i] === "") parsed_line = parsed_line.splice(i, 1);
 				}
 				if (parsed_line[0] != [""]) parser.code.push(parsed_line);
 			});
 		parser.defs = {};
 		parser.main = parser.buildJSON(parser.code);
 		parser.superJSON = {"status":"", "definitions":parser.defs, "main":parser.main};
-		$('#status').val($('#status').val() + "\n> " + JSON.stringify(parser.superJSON, null, 4));
+		if (typeof callback === 'function') callback(parser.superJSON);
 	},
 	
 	buildJSON: function(code)
@@ -62,7 +62,7 @@ var parser =
 		}	
 		else split_ex = split_ex[0];
 		var matched = split_ex.match(/(.*?)\((.*)\)/);
-		if (matched != null)
+		if (matched !== null)
 		{
 			var args = parser.splitStatement(matched[2], {",":","});
 			pf[matched[1]]={};
@@ -95,15 +95,15 @@ var parser =
 			{
 				parentheses--;
 				temp_ex += ")";
-				if (parentheses == 0)
+				if (parentheses === 0)
 				{
 					split_ex.push(temp_ex);
 					temp_ex = "";
 				}
 			}
-			else if (code[i] in splitter && parentheses == 0)
+			else if (code[i] in splitter && parentheses === 0)
 			{
-				if (temp_ex != "")
+				if (temp_ex !== "")
 				{
 					split_ex.push(temp_ex);
 					temp_ex = "";
@@ -113,7 +113,7 @@ var parser =
 			}
 			else temp_ex += code[i];
 		}
-		if (temp_ex != "") split_ex.push(temp_ex);
+		if (temp_ex !== "") split_ex.push(temp_ex);
 		return split_ex;
 	},
 	
@@ -121,14 +121,14 @@ var parser =
 	{
 		var postfix = [];
 		var stack = [];
-		if(ex[1]=="=") start=2
+		if(ex[1]=="=") start=2;
 		else start=0;
 		for (var i = start; i<ex.length; i++)
 		{
 			if(!(parser.ops.hasOwnProperty(ex[i]))) postfix.push(ex[i]);
 			else
 			{
-				if(stack.length == 0) stack.push(ex[i]);
+				if(stack.length === 0) stack.push(ex[i]);
 				else
 				{
 					if(parser.compareOp(stack[stack.length-1],ex[i])>-1) postfix.push(stack.pop());
@@ -136,24 +136,24 @@ var parser =
 				}
 			}
 		}
-		while (stack.length != 0)
+		while (stack.length !== 0)
 		{
 			postfix.push(stack.pop());
 		}
-		for (var i = 0; i<postfix.length; i++)
+		for (var j = 0; j < postfix.length; j++)
 		{
-			if (parser.ops.hasOwnProperty(postfix[i]))
+			if (parser.ops.hasOwnProperty(postfix[j]))
 			{
 				var op1 = stack.pop();
 				var op2 = stack.pop();
-				stack.push(parser.ops[postfix[i]]+"("+op2+","+op1+")");
+				stack.push(parser.ops[postfix[j]]+"("+op2+","+op1+")");
 			}
 			else
 			{
-				stack.push(postfix[i]);
+				stack.push(postfix[j]);
 			}
 		}
-		if (start==0) return stack.pop();
+		if (start===0) return stack.pop();
 		else return "assign("+ex[0]+","+stack.pop()+")";
 				
 	},
@@ -187,11 +187,11 @@ var parser =
 		var newstr = "";
 		for( var i = 0; i<line.length; i++)
 		{
-			if (line[i]=="(") {parenthesis++; newstr+=line[i]}
-			else if (line[i]==")") {parenthesis--; newstr+=line[i]}
-			else if (line[i]==" " && parenthesis!=0);
-			else newstr+=line[i]
+			if (line[i]=="(") {parenthesis++; newstr+=line[i];}
+			else if (line[i]==")") {parenthesis--; newstr+=line[i];}
+			else if (line[i]==" " && parenthesis!==0);
+			else newstr+=line[i];
 		}
 		return newstr;
 	}
-}
+};

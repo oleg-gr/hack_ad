@@ -4,29 +4,35 @@ var main =
 	{
 		editor.init();
 	}
-}
+};
+
+var masterUpdate = function(id_list, callback){
+  for (var i = 0; i < id_list.length; i++){
+    $.get(id_list[i]
+  }
+};
+
+var printConsole = function(text){
+  $('#std-out').append('> ' + text + '\n');
+};
+
+var postObject = function(obj, callback){
+  var val = $.post("http://discos.herokuapp.com/io", obj, printConsole(JSON.stringify(resp, null, 4)), 'json');
+  if (typeof callback === 'function') callback(val);
+};
+
+var getObject = function(id, callback){
+  var val = $.get("http://discos.herokuapp.com/io", {from: 'master', id: id}, printConsole(JSON.stringify(resp, null, 4)), 'json');
+  if (typeof callback === 'function') callback(val);
+};
 
 $(document).ready(function() {
-	main.init();
-	$("#compile").on("click", function() {
-		if (syntax.check(editor.doc)) {
-			parser.parse(editor.doc);
-		}
-	});
-	
-	$('#search').bind('keyup', function(e) {
-	 var code = (e.keyCode ? e.keyCode : e.which);
- 		if(code == 13) { //Enter keycode
-   			
-   			$('#status').val($('#status').val() + "> " + $('#search').val());
-   			$('#search').val("");
-   			
- 		}
- 	});
-	
-	/*
-	$("#find").on("click", editor.find());
-	$("#next").on("click", editor.findn());
-	$("#prev").on("click", editor.findp());
-	*/
+  main.init();
+  $("#compile").on("click", function() {
+    if (syntax.check(editor.doc)) {
+      parser.parse(editor.doc, function(obj){JSON.stringify(obj, null, 4); 
+      postObject(obj);});
+    }
+  });
 });
+
