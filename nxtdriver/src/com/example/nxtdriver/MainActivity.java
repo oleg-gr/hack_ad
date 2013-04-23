@@ -107,6 +107,55 @@ public class MainActivity extends Activity{
 		compiler.compile(compiler.main);
 		Log.v("nxtdriver","finished compiling");
 	}}
+	
+	public static String getHTML(String urlToRead) {
+		URL url;
+		HttpURLConnection conn;
+		BufferedReader rd;
+		String line;
+		String result = "";
+		try {
+			url = new URL(urlToRead);
+			conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("GET");
+			rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			while ((line = rd.readLine()) != null) {
+				result += line;
+			}
+			rd.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	public static void postHTML () throws IOException {
+		
+		URL url = new URL("http://discos.herokuapp.com/io?from=slave&id=1");
+		HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
+		httpCon.setDoOutput(true);
+		httpCon.setRequestMethod("POST");
+		OutputStreamWriter out = new OutputStreamWriter(
+		    httpCon.getOutputStream());
+		//needs to be changed to actuall sensors' readings
+		out.write("{status: \"active\", sensors: [22, 14, 0, 0], msg: \"ok\"}");
+		out.close();
+		
+	}
+	
+	public static int get_status() {
+		
+		JSONObject response = new JSONObject(getHTML("http://discos.herokuapp.com/io?from=slave&id=1"));
+		return response.getInt("status");
+		
+	}
+	
+	public static String get_code() {
+		
+		JSONObject response = new JSONObject(getHTML("http://discos.herokuapp.com/io?from=slave&id=1"));
+		return response.getString("code");
+		
+	}	
 
 	public void change_motor(boolean[] m, byte[] s, int d)
 	{
