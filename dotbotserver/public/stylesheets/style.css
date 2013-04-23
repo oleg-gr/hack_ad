@@ -1,9 +1,7 @@
 #body{
-  margin-top: 30px;
+  margin-top: 50px;
   width:100%;
 }
-
-
 .divider{
   margin-top: 50px;
 }
@@ -12,34 +10,26 @@
   margin-bottom: 30px;
 }
 
-.row-fluid{
-	margin: 15px 0px 0px 0px;
-}
-.section-divider{
-color: #660099;
-box-shadow:  2px 2px 2px #888888;
-  margin-top: 60px;
-  margin-bottom: 10px;
-  
-  font-size: 40px;
-  height: 60px;
-  line-height: 40px;
-  vertical-align: middle;
-  
-}
-.about {
-color: #000000;
-}
-.method{
-color:#CC0000;
+.big-image{
+  float: right;
+  max-width:100%;
 }
 
-.implementation{
-color:#99CC00;
+.section-divider{
+  background:#eeeeee;
+  margin-top: 60px;
+  height: 80px;
+  margin-bottom: 10px;
+  -webkit-box-shadow: 0 0 10px 0 rgba(0,0,0,0.4);
+  box-shadow: 0 0 10px 0 rgba(0,0,0,0.4);
+  padding: 0 30px;
 }
+
+.section-divider center{
+}
+
 #header-img{
   max-width:60%;
-  
 }
 
 .center{
@@ -64,40 +54,99 @@ color:#99CC00;
 .bordered {
   background: #f0f0f0;
   box-shadow: 2px 2px 2px #888888;
-  
-}
-.bordered p {
-	text-align:center;
-}
-.explanation{
-	height: 600px;
-	
 }
 
-.description{
-	height: 560px;
-}
 .video-container {
-	position: relative;
-	padding-bottom: 56.25%;
-	padding-top: 30px;
-	height: 0;
-	overflow: hidden;
+  position: relative;
+  padding-bottom: 56.25%;
+  padding-top: 30px;
+  height: 0;
+  overflow: hidden;
 }
 
 .video-container iframe,  
 .video-container object,  
 .video-container embed {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#std-in{
+  width: 100%;
+  height: 50px;
+  margin-top: -10px;
+}
+
+#editor{
+  width: 100%;
+  height: 400px;
+}
+
+.logo{
+	position:absolute;
+	left: 100px;
+	top: 80px;
+	width: 381px;
+	height: 262px;
+}
+.dotbotlogo {
+	position:absolute;
+	left: 100px;
+	top: 140px;
+	
+}
+#std-out {
+  padding: 10px;
+  height: 450px;
+  border: 1px solid;
+  margin-top: -10px;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+
+#std-in-row {
+}
+#rover-header {
+  top:-30px;
+  position:relative;
+}
+#rover-row {
+  top:-30px;
+  position:relative;
 }
 
 
+.CodeMirror {
+	height: 470px;
+  width: 100%;
+	float: right;
+  margin-top: -10px;
+}
 
-.tagline {
-	margin-top: 70px;
-	margin-bottom: 70px;
+#std-in-row{
+  top: -45px;
+  position: relative;
+}
+
+#std-in-label{
+  margin-bottom: 20px;
+  z-index: 10;
+}
+
+#compile {
+  position: relative;
+  margin-top: 10px;
+  z-index: 20;
+}
+
+
+.rover-btn {
+  padding: 10px;
+  display: block;
+  margin: 0 auto;
+  width: 60%;
+  height: 40px;
 }

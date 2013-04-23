@@ -101,9 +101,7 @@ var syntax = {
 	},
     
     out: function (m,n) {
-    
-    	$("#status").val(m+ ' ' +n);
-    
+    	$("#std-out").append('>> ' + m + ' ' + n + '<br />');
     }
     
 	
