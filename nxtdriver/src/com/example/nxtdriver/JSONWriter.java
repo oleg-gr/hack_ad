@@ -1,7 +1,8 @@
-package dotbot;
+package com.example.nxtdriver;
 
 import java.io.IOException;
 import java.io.Writer;
+
 
 /*
 Copyright (c) 2006 JSON.org

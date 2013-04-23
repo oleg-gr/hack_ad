@@ -1,4 +1,4 @@
-package dotbot;
+package com.example.nxtdriver;
 
 /*
  Copyright (c) 2002 JSON.org
@@ -38,6 +38,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
+
 
 /**
  * A JSONObject is an unordered collection of name/value pairs. Its external

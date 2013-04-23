@@ -5,23 +5,23 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.util.Log;
+import android.view.View;
 
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class MainActivity extends Activity implements OnClickListener{
+public class MainActivity extends Activity{
 
 	TextView status;
 	BluetoothAdapter mBluetoothAdapter;
@@ -31,16 +31,13 @@ public class MainActivity extends Activity implements OnClickListener{
 	InputStream mmInputStream;
 	ScheduledExecutorService sendNXT;
 	ScheduledExecutorService readNXT;
-	ScheduledExecutorService sendServer;
+	ScheduledExecutorService server;
 	ScheduledExecutorService background;
+	ScheduledExecutorService compile;
 	TextView sensor;
-	byte motora = 0;
-	byte motorb = 0;
-	byte motorc = 0;
-	byte motora_o = 0;
-	byte motorb_o = 0;
-	byte motorc_o = 0;
+	byte[][] motors = new byte[2][3];
 	byte[] received = new byte[3];
+	Compiler compiler;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -49,16 +46,11 @@ public class MainActivity extends Activity implements OnClickListener{
 		setContentView(R.layout.activity_main);
 		sendNXT = Executors.newSingleThreadScheduledExecutor();
 		readNXT = Executors.newSingleThreadScheduledExecutor();
-		sendServer = Executors.newSingleThreadScheduledExecutor();
+		server = Executors.newSingleThreadScheduledExecutor();
 		background = Executors.newSingleThreadScheduledExecutor();
-		Button forwardButton = (Button)findViewById(R.id.forward);
-		Button reverseButton = (Button)findViewById(R.id.reverse);
-		Button leftButton = (Button)findViewById(R.id.left);
-		Button rightButton = (Button)findViewById(R.id.right);
+		compile = Executors.newSingleThreadScheduledExecutor();
 		Button connectButton = (Button)findViewById(R.id.connect);
-		Button stopButton = (Button)findViewById(R.id.stop);
-		Button readButton = (Button)findViewById(R.id.read);
-
+		//Button readButton = (Button)findViewById(R.id.read);
 		status = (TextView)findViewById(R.id.status);
 		sensor = (TextView)findViewById(R.id.sensor);
 
@@ -68,87 +60,81 @@ public class MainActivity extends Activity implements OnClickListener{
 				{
 					findBT();
 					connectBT();
+					compile.execute(new dotbot());
+					sendNXT.scheduleAtFixedRate(new send(), 0, 500, TimeUnit.MILLISECONDS);
+					//readNXT.scheduleAtFixedRate(new read(), 0, 10, TimeUnit.MILLISECONDS);
 				} catch(Exception e) {
+					Log.v("nxtdriver", e.getMessage());
 				}
-
 			}
 		});
 
-		forwardButton.setOnClickListener(this);
-		reverseButton.setOnClickListener(this);
-		leftButton.setOnClickListener(this);
-		rightButton.setOnClickListener(this);
-		stopButton.setOnClickListener(this);
-		readButton.setOnClickListener(new View.OnClickListener() {
+		/*readButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
+				Log.v("nxtdriver", "read initiated");
+				try {
+					Log.v("nxtdriverdistance", String.valueOf(mmInputStream.available()));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				readNXT.scheduleAtFixedRate(new Runnable() {
-					public void run(){
-						try {
-							mmInputStream.read(received);
-							Log.v("nxtdriver", "distance: "+String.valueOf(received[2]));
-						} catch (Exception e) {
-							String error = e.getMessage();
-							Log.v("nxtdriver", error);
-						}}
-				}, 0, 5, TimeUnit.MILLISECONDS);}});
+					
+				}, 0, 5, TimeUnit.MILLISECONDS);}});*/
 	}
-	@Override
-	public void onClick(final View v){
-		sendNXT.execute(new sendCmd(v));
+	
+	public class read implements Runnable{
+		public void run(){
+			try {
+
+				if (mmInputStream.available()>0){
+				mmInputStream.read(received);
+				//Log.v("nxtdriver", received.toString());
+				Log.v("nxtdriverread", "distance: "+String.valueOf(received[2]));}
+				//else Log.v("nxtdriverread", "no bytes");
+			} catch (Exception e) {
+				String error = e.getMessage();
+				Log.v("nxtdriverread", error);
+			}}
 	}
 
-	private class sendCmd implements Runnable{
-		View v;
-		sendCmd(View v){this.v = v;};
+	public class dotbot implements Runnable{
+	public void run(){
+		String code = "{\"status\":\"\",\"definitions\":{},\"main\":[{\"fd\":{\"arg0\":\"3\"}},{\"rt\":{\"arg0\":\"1\"}},{\"fd\":{\"arg0\":\"5\"}}]}";
+		Log.v("nxtdriver","dotbot started");
+		compiler = new Compiler(code);
+		Log.v("nxtdriver","compiler instantiated");
+		compiler.compile(compiler.main);
+		Log.v("nxtdriver","finished compiling");
+	}}
 
-		@Override
-		public void run() {
-			try{
-				switch(v.getId())
-				{
-				case R.id.forward:
-				{
-					motora = 60;
-					motorb = 60;
-					break;
-				}
-
-				case R.id.reverse:
-				{
-					motora = -60;
-					motorb = -60;
-					break;
-				}
-				case R.id.left:
-				{
-					motora = 30;
-					motorb = -30;
-					break;
-				}
-				case R.id.right:
-				{
-					motora = -30;
-					motorb = 30;
-					break;
-				}
-				case R.id.stop:
-				{
-					motora = 0;
-					motorb = 0;
-					break;
-				} 
-				} send();
-			}catch(Exception e){}
-
+	public void change_motor(boolean[] m, byte[] s, int d)
+	{
+		Log.v("nxtdriver","changing motor speed");
+		for (int i = 0; i<m.length; i++)
+		{
+			if(m[i]) motors[0][i] = s[i];
+		}
+		try {
+			Thread.sleep(d);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
-
-	void send() throws Exception
+	
+	public class send implements Runnable{
+	public void run()
 	{
-		mmOutputStream.writeByte(motora);
-		mmOutputStream.writeByte(motorb);
-		mmOutputStream.writeByte(motorc);        
-	}
+		try {
+			mmOutputStream.write(motors[0]);
+			Log.v("nxtdriversend", "size: "+mmOutputStream.size());
+			//Log.v("nxtdriversend",String.valueOf(motors[0][0])+ " "+String.valueOf(motors[0][1])+ " "+String.valueOf(motors[0][2]));
+		} catch (Exception e) {
+			Log.v("nxtdriversend",e.getMessage());
+		}
+	}}
+
+
 	void findBT() throws Exception
 	{
 
@@ -187,7 +173,281 @@ public class MainActivity extends Activity implements OnClickListener{
 		mmInputStream = mmSocket.getInputStream();
 		status.setText("Connection Established");
 	}
+	
+	private class Compiler {
 
+		String CHECK = "";
+		ArrayList <JSONObject> variables = new ArrayList <JSONObject>(); 
+		public JSONObject definitions;
+		public JSONArray main;
+		int count = 0;
 
+		public Compiler(String jsonstring) 
+		{
+			JSONObject superJSON = new JSONObject(jsonstring);
+			this.definitions = superJSON.getJSONObject("definitions");		
+			this.main = superJSON.getJSONArray("main");
+			variables.add(new JSONObject());
+		}
 
+		public void compile(JSONArray code) 
+		{
+			JSONArray copy = new JSONArray(code.toString());
+			for (int i = 0; i < code.length(); i++) 
+			{
+				Log.v("nxtdrivercompile", "evaluating code line " + i);
+				evaluateObject(copy.getJSONObject(i));
+				Log.v("nxtdrivercompile", "finished evaluating code line " + i);
+			}
+		}
+
+		public void next() 
+		{
+			evaluateObject(this.main.getJSONObject(this.count++));
+		}
+
+		private String evaluateObject(JSONObject jsonObject) 
+		{
+			String name = (String) jsonObject.keys().next();
+			JSONObject function = jsonObject.getJSONObject(name);
+			JSONArray keys = function.names();
+			JSONObject copy = new JSONObject(function.toString());
+			Log.v("nxtdrivercompile", "initialised evaluateObject");
+			if (keys != null && !name.equals("if") &&!name.equals("while")) {
+				for (int i = 0; i < keys.length(); i++) { 
+					String temp_str = keys.getString(i);
+					if (function.get(temp_str).getClass() != CHECK.getClass()) 
+					{
+						function.put(temp_str, evaluateObject(copy.getJSONObject(temp_str)));
+					}
+				}
+				Log.v("nxtdrivercompile", "finished evaluating args");
+			}
+			else if (name.equals("if")) 
+			{
+				if (evaluateObject(copy.getJSONObject("condition")).equals("true")) 
+				{
+					this.compile(copy.getJSONArray("code"));
+				}
+				else 
+				{
+					this.compile(copy.getJSONArray("else"));
+				}
+			}
+
+			else if (name.equals("while")) 
+			{
+				while (evaluateObject(copy.getJSONObject("condition")).equals("true"))
+				{
+					this.compile(copy.getJSONArray("code"));
+				}
+			}
+			
+			Log.v("nxtdrivercompile", "function name is:"+name+".");
+
+			if (name.equals("add")) { return add((String) function.get("arg0"),(String) function.get("arg1"));
+
+			} else if (name.equals("sub")) { return sub((String) function.get("arg0"),(String) function.get("arg1"));
+
+			} else if (name.equals("assign")) { assign((String) function.get("arg0"),(String) function.get("arg1")); 
+
+			} else if (name.equals("print")) { print((String) function.get("arg0"));
+
+			} else if (name.equals("greater_than")) { return greater((String) function.get("arg0"),(String) function.get("arg1"));
+
+			} else if (name.equals("less_than")) { return greater((String) function.get("arg1"),(String) function.get("arg0"));
+
+			} else if (name.equals("equals")) { return equals((String) function.get("arg1"),(String) function.get("arg0"));
+
+			} else if (name.equals("and")) { return and((String) function.get("arg0"),(String) function.get("arg1"));
+
+			} else if (name.equals("or")) { return or((String) function.get("arg0"),(String) function.get("arg1"));
+
+			} else if (name.equals("not")) { return not((String) function.get("arg0"));
+
+			} else if (name.equals("mult")) { return mult((String) function.get("arg0"),(String) function.get("arg1"));
+
+			} else if (name.equals("div")) { return div((String) function.get("arg0"),(String) function.get("arg1"));
+
+			} else if (name.equals("mod")) { return mod((String) function.get("arg0"),(String) function.get("arg1"));
+
+			} else if (name.equals("motorA")) { motorA((String) function.get("arg0"),(String) function.get("arg1"));
+
+			} else if (name.equals("motorB")) { motorB((String) function.get("arg0"),(String) function.get("arg1"));
+
+			} else if (name.equals("motorC")) { motorC((String) function.get("arg0"),(String) function.get("arg1"));
+
+			} else if (name.equals("motorAB")) { motorAB((String) function.get("arg0"),(String) function.get("arg1"), (String) function.get("arg2"));
+
+			} else if (name.equals("motorAC")) { motorAC((String) function.get("arg0"),(String) function.get("arg1"), (String) function.get("arg2"));
+
+			} else if (name.equals("motorBC")) { motorBC((String) function.get("arg0"),(String) function.get("arg1"), (String) function.get("arg2"));
+
+			} else if (name.equals("motorABC")) { motorABC((String) function.get("arg0"),(String) function.get("arg1"), (String) function.get("arg2"), (String) function.get("arg3"));
+
+			} else if (name.equals("forward") || name.equals("fd")) {motorAB("80", "80", String.valueOf(Integer.parseInt((String)function.get("arg0"))*1000));
+
+			} else if (name.equals("backward") || name.equals("bd")) { motorAB("-80", "-80", String.valueOf(Integer.parseInt((String)function.get("arg0"))*1000));
+
+			} else if (name.equals("right") || name.equals("rt")) { motorAB("0", "80", String.valueOf(Integer.parseInt((String)function.get("arg0"))*1000));
+
+			} else if (name.equals("left") || name.equals("lt")) { motorAB("80", "0", String.valueOf(Integer.parseInt((String)function.get("arg0"))*1000));
+
+			}
+
+			else{ 
+				if (this.definitions.has(name)) {
+					//put all arguments into an array
+					JSONObject definedfunction = this.definitions.getJSONObject(name);
+					JSONObject localvariables = new JSONObject();
+					JSONObject argumentsdefinitions = definedfunction.getJSONObject("args"); //definition of arguments
+					if (function.length() == argumentsdefinitions.length()) {
+
+						for (int i = 0; i < function.length(); i++) {
+							String argumentnum = "arg" + i;
+							localvariables.put(argumentsdefinitions.getString(argumentnum), lookup(function.getString(argumentnum)));
+						}
+
+						variables.add(localvariables);
+						JSONArray ourcode = definedfunction.getJSONArray("code");
+
+						for (int i = 0; i < ourcode.length(); i++) {
+							evaluateObject(ourcode.getJSONObject(i));
+						}
+
+						variables.remove(variables.size()-1);
+					}
+					else {
+
+						//"different number of arguments" error
+
+					}
+				}
+				else {
+
+					//put an error statement "not a function" here
+
+				}
+			}
+
+			return "";		
+
+		}
+
+		private void motorA(String x, String y) {
+			change_motor(new boolean[] {true, false, false}, new byte[] {Byte.parseByte(x)}, Integer.parseInt(y));
+		}
+
+		private void motorB(String x, String y) {
+			change_motor(new boolean[] {false, true, false}, new byte[] {Byte.parseByte(x)}, Integer.parseInt(y));
+		}
+
+		private void motorC(String x, String y) {
+			change_motor(new boolean[] {false, false, true}, new byte[] {Byte.parseByte(x)}, Integer.parseInt(y));
+		}
+
+		private void motorAB(String x1, String x2, String y) {
+			change_motor(new boolean[] {true, true, false}, new byte[] {Byte.parseByte(x1), Byte.parseByte(x2)}, Integer.parseInt(y));
+		}
+
+		private void motorAC(String x1, String x2, String y) {
+			change_motor(new boolean[] {true, false, true}, new byte[] {Byte.parseByte(x1), Byte.parseByte(x2)}, Integer.parseInt(y));
+		}
+
+		private void motorBC(String x1, String x2, String y) {
+			change_motor(new boolean[] {false, true, true}, new byte[] {Byte.parseByte(x1), Byte.parseByte(x2)}, Integer.parseInt(y));
+		}
+
+		private void motorABC(String x1, String x2, String x3, String y) {
+			change_motor(new boolean[] {true, true, true}, new byte[] {Byte.parseByte(x1), Byte.parseByte(x2), Byte.parseByte(x3)}, Integer.parseInt(y));
+		}
+
+		private void assign(String x, String y) 
+		{
+			if (getScope().has(x)) 
+			{
+				getScope().remove(x);
+			}
+			getScope().put(x, y);
+		}
+
+		private  String add(String x, String y) 
+		{
+			return Integer.toString(Integer.parseInt(lookup(x))+Integer.parseInt(lookup(y)));
+		}
+
+		private  String sub(String x, String y) 
+		{
+			return Integer.toString(Integer.parseInt(lookup(x))-Integer.parseInt(lookup(y)));
+		}
+
+		private  String mult(String x, String y) 
+		{
+			return Integer.toString(Integer.parseInt(lookup(x))*Integer.parseInt(lookup(y)));
+		}
+
+		private  String div(String x, String y) 
+		{
+			return Integer.toString(Integer.parseInt(lookup(x))/Integer.parseInt(lookup(y)));
+		}
+
+		private  String mod(String x, String y) 
+		{
+			return Integer.toString(Integer.parseInt(lookup(x)) % Integer.parseInt(lookup(y)));
+		}
+
+		private  String print(String x) 
+		{
+			System.out.println(lookup(x));
+			return "";
+		}
+
+		private  String greater(String x, String y) 
+		{
+			return Boolean.toString(Integer.parseInt(lookup(x))>Integer.parseInt(lookup(y)));
+		}
+
+		private  String equals(String x, String y) 
+		{
+			return Boolean.toString(Integer.parseInt(lookup(x))==Integer.parseInt(lookup(y)));
+		}
+
+		private  String and(String x, String y) 
+		{
+			return Boolean.toString(x.equals("true") && y.equals("true"));
+		}
+
+		private  String or(String x, String y) 
+		{
+			return Boolean.toString(x.equals("true") || y.equals("true"));
+		}
+
+		private  String not(String x) 
+		{
+			return Boolean.toString(!(x.equals("true")));
+		}
+
+		private  String lookup(String x) {
+			if (x.length() > 0) {
+				if (x.substring(0, 1).equals("^")) 
+				{
+					return x.substring(1, x.length());
+				}
+			}
+
+			for (int i = variables.size()-1; i > -1; i--) 
+			{
+				if (variables.get(i).has(x)) 
+				{
+					return (String) variables.get(i).getString(x);
+				}
+			}
+			return x;
+		}
+
+		private  JSONObject getScope() 
+		{
+			return variables.get(variables.size()-1);
+		}
+	}
 }

@@ -1,4 +1,4 @@
-package dotbot;
+package com.example.nxtdriver;
 
 /*
  Copyright (c) 2002 JSON.org
@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+
 
 /**
  * A JSONArray is an ordered sequence of values. Its external text form is a

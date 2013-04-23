@@ -1,4 +1,4 @@
-package dotbot;
+package com.example.nxtdriver;
 
 /**
  * The JSONException is thrown by the JSON.org classes when things are amiss.
