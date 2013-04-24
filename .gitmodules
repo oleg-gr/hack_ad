@@ -1,0 +1,3 @@
+[submodule "discos"]
+	path = discos
+	url = git@heroku.com:discos.git
