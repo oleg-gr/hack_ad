@@ -11,9 +11,14 @@ import android.widget.TextView;
 import android.util.Log;
 import android.view.View;
 
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
@@ -108,6 +113,7 @@ public class MainActivity extends Activity{
 		
 		compiler.compile(compiler.main);
 		Log.v("nxtdriver","finished compiling");
+		change_motor(new boolean[] {true, true, true}, new byte[] {0,0,0}, 1);
 	}}
 	
 	public static String getHTML(String urlToRead) {
