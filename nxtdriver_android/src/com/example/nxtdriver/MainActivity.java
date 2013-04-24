@@ -106,24 +106,24 @@ public class MainActivity extends Activity{
 
 	public class dotbot implements Runnable{
 	public void run(){
-		String code = "{\"status\":\"\",\"definitions\":{},\"main\":[{\"fd\":{\"arg0\":\"3\"}},{\"rt\":{\"arg0\":\"1\"}},{\"fd\":{\"arg0\":\"5\"}}]}";
+		String code = getHTML();
 		Log.v("nxtdriver","dotbot started");
 		compiler = new Compiler(code);
 		Log.v("nxtdriver","compiler instantiated");
 		
-		compiler.compile(compiler.main);
+		compiler.compile();
 		Log.v("nxtdriver","finished compiling");
 		change_motor(new boolean[] {true, true, true}, new byte[] {0,0,0}, 1);
 	}}
 	
-	public static String getHTML(String urlToRead) {
+	public static String getHTML() {
 		URL url;
 		HttpURLConnection conn;
 		BufferedReader rd;
 		String line;
 		String result = "";
 		try {
-			url = new URL(urlToRead);
+			url = new URL("http://discos.herokuapp.com/io?from=slave&id=1");
 			conn = (HttpURLConnection) url.openConnection();
 			conn.setRequestMethod("GET");
 			rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -134,35 +134,66 @@ public class MainActivity extends Activity{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		System.out.println(result);
 		return result;
 	}
 	
-	public static void postHTML () throws IOException {
-		
-		URL url = new URL("http://discos.herokuapp.com/io?from=slave&id=1");
-		HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
-		httpCon.setDoOutput(true);
-		httpCon.setRequestMethod("POST");
-		OutputStreamWriter out = new OutputStreamWriter(
-		    httpCon.getOutputStream());
-		//needs to be changed to actuall sensors' readings
-		out.write("{status: \"active\", sensors: [22, 14, 0, 0], msg: \"ok\"}");
-		out.close();
-		
-	}
-	
-	public static int get_status() {
-		
-		JSONObject response = new JSONObject(getHTML("http://discos.herokuapp.com/io?from=slave&id=1"));
-		return response.getInt("status");
-		
-	}
-	
-	public static String get_code() {
-		
-		JSONObject response = new JSONObject(getHTML("http://discos.herokuapp.com/io?from=slave&id=1"));
-		return response.getString("code");
-		
+	public static String postHTML() throws UnsupportedEncodingException
+	{
+		String urlParameters =
+				"from=" + URLEncoder.encode("slave", "UTF-8") +
+				"&id=" + URLEncoder.encode("1", "UTF-8") +
+				"&status=" + URLEncoder.encode("ok", "UTF-8") +
+				"&sensors=" + URLEncoder.encode("READ SEANSORS HERE", "UTF-8") +
+				"&msg=" + URLEncoder.encode("ok", "UTF-8");
+		URL url;
+		HttpURLConnection connection = null;  
+		try {
+			//Create connection
+			url = new URL("http://discos.herokuapp.com/io");
+			connection = (HttpURLConnection)url.openConnection();
+			connection.setRequestMethod("POST");
+			connection.setRequestProperty("Content-Type", 
+					"application/x-www-form-urlencoded");
+
+			connection.setRequestProperty("Content-Length", "" + 
+					Integer.toString(urlParameters.getBytes().length));
+			connection.setRequestProperty("Content-Language", "en-US");  
+
+			connection.setUseCaches (false);
+			connection.setDoInput(true);
+			connection.setDoOutput(true);
+
+			//Send request
+			DataOutputStream wr = new DataOutputStream (
+					connection.getOutputStream ());
+			wr.writeBytes (urlParameters);
+			wr.flush ();
+			wr.close ();
+
+			//Get Response	
+			InputStream is = connection.getInputStream();
+			BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+			String line;
+			StringBuffer response = new StringBuffer(); 
+			while((line = rd.readLine()) != null) {
+				response.append(line);
+				response.append('\r');
+			}
+			rd.close();
+			return response.toString();
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			return null;
+
+		} finally {
+
+			if(connection != null) {
+				connection.disconnect(); 
+			}
+		}
 	}	
 
 	public void change_motor(boolean[] m, byte[] s, int d)
@@ -251,6 +282,12 @@ public class MainActivity extends Activity{
 			this.definitions = superJSON.getJSONObject("definitions");		
 			this.main = superJSON.getJSONArray("main");
 			variables.add(new JSONObject());
+		}
+		
+		public void compile () {
+			
+			this.compile(this.main);
+			
 		}
 
 		public void compile(JSONArray code) 
