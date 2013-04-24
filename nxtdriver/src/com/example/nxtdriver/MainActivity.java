@@ -38,6 +38,7 @@ public class MainActivity extends Activity{
 	byte[][] motors = new byte[2][3];
 	byte[] received = new byte[3];
 	Compiler compiler;
+	boolean sending = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -61,7 +62,7 @@ public class MainActivity extends Activity{
 					findBT();
 					connectBT();
 					compile.execute(new dotbot());
-					sendNXT.scheduleAtFixedRate(new send(), 0, 500, TimeUnit.MILLISECONDS);
+					
 					//readNXT.scheduleAtFixedRate(new read(), 0, 10, TimeUnit.MILLISECONDS);
 				} catch(Exception e) {
 					Log.v("nxtdriver", e.getMessage());
@@ -104,12 +105,19 @@ public class MainActivity extends Activity{
 		Log.v("nxtdriver","dotbot started");
 		compiler = new Compiler(code);
 		Log.v("nxtdriver","compiler instantiated");
+		
 		compiler.compile(compiler.main);
 		Log.v("nxtdriver","finished compiling");
 	}}
 
 	public void change_motor(boolean[] m, byte[] s, int d)
 	{
+		if(!sending)
+		{
+			sendNXT.scheduleAtFixedRate(new send(), 0, 500, TimeUnit.MILLISECONDS);
+			sending = true;
+		}
+		
 		Log.v("nxtdriver","changing motor speed");
 		for (int i = 0; i<m.length; i++)
 		{
