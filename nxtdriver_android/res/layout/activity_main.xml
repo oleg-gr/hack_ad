@@ -9,15 +9,6 @@
     tools:context=".MainActivity" >
 
     <Button
-        android:id="@+id/right"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/left"
-        android:layout_alignBottom="@+id/left"
-        android:layout_toRightOf="@+id/reverse"
-        android:text="Right" />
-
-    <Button
         android:id="@+id/connect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -30,61 +21,41 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/connect"
+        android:layout_alignRight="@+id/connect"
         android:layout_below="@+id/connect"
         android:text="Status" />
-
-    <Button
-        android:id="@+id/reverse"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/right"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="32dp"
-        android:text="Reverse" />
-
-    <Button
-        android:id="@+id/forward"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/reverse"
-        android:layout_below="@+id/status"
-        android:layout_marginTop="21dp"
-        android:text="Forward" />
 
     <Button
         android:id="@+id/stop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/right"
-        android:layout_alignBottom="@+id/right"
-        android:layout_centerHorizontal="true"
+        android:layout_alignLeft="@+id/status"
+        android:layout_centerVertical="true"
         android:text="Stop" />
-
-    <Button
-        android:id="@+id/left"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/forward"
-        android:layout_marginTop="40dp"
-        android:layout_toLeftOf="@+id/forward"
-        android:text="Left" />
-
-    <Button
-        android:id="@+id/read"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/reverse"
-        android:layout_alignBottom="@+id/reverse"
-        android:layout_alignLeft="@+id/sensor"
-        android:text="Read" />
 
     <TextView
         android:id="@+id/sensor"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/status"
-        android:layout_below="@+id/reverse"
-        android:layout_marginTop="36dp"
+        android:layout_alignLeft="@+id/stop"
+        android:layout_below="@+id/stop"
         android:text="Sensor" />
+
+    <NumberPicker
+        android:id="@+id/idpicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/connect" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/connect"
+        android:layout_alignBottom="@+id/connect"
+        android:layout_toLeftOf="@+id/numberPicker1"
+        android:text="ID: "
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
 </RelativeLayout>

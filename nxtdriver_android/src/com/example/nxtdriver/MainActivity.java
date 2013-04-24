@@ -7,6 +7,8 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.NumberPicker;
+import android.widget.NumberPicker.OnValueChangeListener;
 import android.widget.TextView;
 import android.util.Log;
 import android.view.View;
@@ -40,10 +42,13 @@ public class MainActivity extends Activity{
 	ScheduledExecutorService background;
 	ScheduledExecutorService compile;
 	TextView sensor;
+	Button connectButton;
+	NumberPicker idpicker;
 	byte[][] motors = new byte[2][3];
 	byte[] received = new byte[3];
 	Compiler compiler;
 	boolean sending = false;
+	int id;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -55,10 +60,19 @@ public class MainActivity extends Activity{
 		server = Executors.newSingleThreadScheduledExecutor();
 		background = Executors.newSingleThreadScheduledExecutor();
 		compile = Executors.newSingleThreadScheduledExecutor();
-		Button connectButton = (Button)findViewById(R.id.connect);
+		connectButton = (Button)findViewById(R.id.connect);
 		//Button readButton = (Button)findViewById(R.id.read);
 		status = (TextView)findViewById(R.id.status);
 		sensor = (TextView)findViewById(R.id.sensor);
+		idpicker = (NumberPicker) findViewById(R.id.idpicker);
+		
+		idpicker.setOnValueChangedListener(new OnValueChangeListener() {
+			@Override
+			public void onValueChange(NumberPicker arg0, int arg1, int arg2) {
+				id = arg2;
+			}
+			
+		});
 
 		connectButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
@@ -106,24 +120,24 @@ public class MainActivity extends Activity{
 
 	public class dotbot implements Runnable{
 	public void run(){
-		String code = getHTML();
+		String code = "{\"status\":\"\",\"definitions\":{},\"main\":[{\"fd\":{\"arg0\":\"3\"}},{\"rt\":{\"arg0\":\"1\"}},{\"fd\":{\"arg0\":\"5\"}}]}";
 		Log.v("nxtdriver","dotbot started");
 		compiler = new Compiler(code);
 		Log.v("nxtdriver","compiler instantiated");
 		
-		compiler.compile();
+		compiler.compile(compiler.main);
 		Log.v("nxtdriver","finished compiling");
 		change_motor(new boolean[] {true, true, true}, new byte[] {0,0,0}, 1);
 	}}
 	
-	public static String getHTML() {
+	public static String getHTML(String urlToRead) {
 		URL url;
 		HttpURLConnection conn;
 		BufferedReader rd;
 		String line;
 		String result = "";
 		try {
-			url = new URL("http://discos.herokuapp.com/io?from=slave&id=1");
+			url = new URL(urlToRead);
 			conn = (HttpURLConnection) url.openConnection();
 			conn.setRequestMethod("GET");
 			rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -134,66 +148,35 @@ public class MainActivity extends Activity{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println(result);
 		return result;
 	}
 	
-	public static String postHTML() throws UnsupportedEncodingException
-	{
-		String urlParameters =
-				"from=" + URLEncoder.encode("slave", "UTF-8") +
-				"&id=" + URLEncoder.encode("1", "UTF-8") +
-				"&status=" + URLEncoder.encode("ok", "UTF-8") +
-				"&sensors=" + URLEncoder.encode("READ SEANSORS HERE", "UTF-8") +
-				"&msg=" + URLEncoder.encode("ok", "UTF-8");
-		URL url;
-		HttpURLConnection connection = null;  
-		try {
-			//Create connection
-			url = new URL("http://discos.herokuapp.com/io");
-			connection = (HttpURLConnection)url.openConnection();
-			connection.setRequestMethod("POST");
-			connection.setRequestProperty("Content-Type", 
-					"application/x-www-form-urlencoded");
-
-			connection.setRequestProperty("Content-Length", "" + 
-					Integer.toString(urlParameters.getBytes().length));
-			connection.setRequestProperty("Content-Language", "en-US");  
-
-			connection.setUseCaches (false);
-			connection.setDoInput(true);
-			connection.setDoOutput(true);
-
-			//Send request
-			DataOutputStream wr = new DataOutputStream (
-					connection.getOutputStream ());
-			wr.writeBytes (urlParameters);
-			wr.flush ();
-			wr.close ();
-
-			//Get Response	
-			InputStream is = connection.getInputStream();
-			BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-			String line;
-			StringBuffer response = new StringBuffer(); 
-			while((line = rd.readLine()) != null) {
-				response.append(line);
-				response.append('\r');
-			}
-			rd.close();
-			return response.toString();
-
-		} catch (Exception e) {
-
-			e.printStackTrace();
-			return null;
-
-		} finally {
-
-			if(connection != null) {
-				connection.disconnect(); 
-			}
-		}
+	public static void postHTML () throws IOException {
+		
+		URL url = new URL("http://discos.herokuapp.com/io?from=slave&id=1");
+		HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
+		httpCon.setDoOutput(true);
+		httpCon.setRequestMethod("POST");
+		OutputStreamWriter out = new OutputStreamWriter(
+		    httpCon.getOutputStream());
+		//needs to be changed to actuall sensors' readings
+		out.write("{status: \"active\", sensors: [22, 14, 0, 0], msg: \"ok\"}");
+		out.close();
+		
+	}
+	
+	public static int get_status() {
+		
+		JSONObject response = new JSONObject(getHTML("http://discos.herokuapp.com/io?from=slave&id=1"));
+		return response.getInt("status");
+		
+	}
+	
+	public static String get_code() {
+		
+		JSONObject response = new JSONObject(getHTML("http://discos.herokuapp.com/io?from=slave&id=1"));
+		return response.getString("code");
+		
 	}	
 
 	public void change_motor(boolean[] m, byte[] s, int d)
@@ -282,12 +265,6 @@ public class MainActivity extends Activity{
 			this.definitions = superJSON.getJSONObject("definitions");		
 			this.main = superJSON.getJSONArray("main");
 			variables.add(new JSONObject());
-		}
-		
-		public void compile () {
-			
-			this.compile(this.main);
-			
 		}
 
 		public void compile(JSONArray code) 
