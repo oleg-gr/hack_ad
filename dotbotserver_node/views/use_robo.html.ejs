@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>DisCoS</title>
+    <link rel="shortcut icon" href="Favicon.ico">
+    <link rel= "stylesheet" type = "text/css" href = "/stylesheets/bootstrap.css"/>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/editor.css" />
+    <link rel="stylesheet" type="text/css" href="/stylesheets/codemirror.css" />
+    <link rel="stylesheet" type="text/css" href="/stylesheets/global_styles.css" />
+    <link rel= "stylesheet" type = "text/css" href = "/stylesheets/use.css"/>
+    <script type="text/javascript" src="/javascripts/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="/javascripts/codemirror.js"></script>
+    <script type="text/javascript" src="/javascripts/tnt.js"></script>
+    <script type="text/javascript" src="/javascripts/placeholder.js"></script>
+    <script type="text/javascript" src="/javascripts/editor.js"></script>
+    <script type="text/javascript" src="/javascripts/parser.js"></script>
+    <script type="text/javascript" src="/javascripts/main.js"></script>
+    <script type="text/javascript" src="/javascripts/syntax.js"></script>
+  </head>
+
+  <body>
+  <div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container-fluid">
+          <a class="brand" href="/">DisCoS</a>
+          <div class="nav-collapse collapse">
+              <ul class="nav">
+                <li><a href="/#home">Home</a></li>
+                <li><a href="/#about">About</a></li>
+                <li><a href="/#idea">The Idea</a></li>
+                <li><a href="/#method">The Method</a></li>
+                <li><a href="/#implementation">The Implementation</a></li>
+              </ul>
+                <a class="nav-button btn btn-success pull-right" href="/use/robo"> Connect to DisCoS</a>
+          </div>
+      </div>
+    </div>
+  </div>
+  <div id="body">
+    <div class="container">
+      <div class="row-fluid">
+        <div class="span6">
+          <h3> STDOUT </h3>
+          <div id="std-out">>><br /></div>
+        </div>
+        <div class="span6">
+          <h3>Start writing your code here:</h3>
+          <textarea id="editor" name="editor" placeholder="Start programming here.."></textarea>
+          <div id="controls" class="left">
+            <a id="compile" class="btn btn-large btn-primary pull-right" >Compile!</a>
+          </div>
+        </div>
+      </div>
+      <div id="std-in-row" class="row-fluid">
+        <div class="span12">
+          <h3 id="std-in-label"> STDIN </h3>
+          <textarea id="std-in"></textarea>
+        </div>
+      </div>
+      <div id="rover-header" class="row-fluid">
+        <h3> Rover States: </h3>
+      </div>
+      <div id="rover-row" class="row-fluid">
+        <div class="span2">
+          <a id="rover1" class="rover-btn btn btn-success">Rover 1 </br> <i>Connected</i></a>
+        </div>
+        <div class="span2">
+          <a id="rover2" class="rover-btn btn btn-primary ">Rover 2 </br> <i>Ready</i></a>
+        </div>
+        <div class="span2">
+          <a id="rover3" class="rover-btn btn btn-warning disabled">Rover 3  <br /> <i>Busy</i></a>
+        </div>
+        <div class="span2">
+          <a id="rover4" class="rover-btn btn btn-warning disabled">Rover 4 <br /> <i>Busy</i> </a>
+        </div>
+        <div class="span2">
+          <a id="rover5" class="rover-btn btn btn-danger disabled">Rover 5 <br /> <i>Offline</i> </a>
+        </div>
+        <div class="span2">
+          <a id="rover6" class="rover-btn btn btn-danger disabled">Rover 6 <br /> <i>Offline</i> </a>
+        </div>
+      </div>
+    </div>
+    <div id="function-defs" class="container">
+    </div>
+  </div>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-39965374-3', 'herokuapp.com');
+  ga('send', 'pageview');
+
+  </script>
+  </body>
+</html>

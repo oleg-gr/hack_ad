@@ -1,0 +1,221 @@
+#body{
+  margin-top: 50px;
+  width:100%;
+}
+.divider{
+  margin-top: 50px;
+}
+
+.divider-small {
+  margin-bottom: 30px;
+}
+
+.big-image{
+  float: right;
+  max-width:100%;
+}
+
+.section-divider{
+  background:#ffffff;
+  margin-top: 60px;
+  height: 80px;
+  margin-bottom: 10px;
+  -webkit-box-shadow: 0 0 10px 0 rgba(0,0,0,0.4);
+  box-shadow: 0 0 10px 0 rgba(0,0,0,0.4);
+  padding: 0 30px;
+}
+
+.section-divider center{
+}
+
+#header-img{
+  max-width:60%;
+}
+
+.center{
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
+.text-center{
+  text-align: center;
+}
+
+.content {
+  margin-left: 100px;
+  margin-right: 100px;
+}
+
+.box {
+  padding: 30px 50px 30px 50px;
+}
+
+.bordered {
+  background: #ffffff;
+  box-shadow: 2px 2px 2px #888888;
+}
+
+.video-container {
+  position: relative;
+  padding-bottom: 56.25%;
+  padding-top: 30px;
+  height: 0;
+  overflow: hidden;
+}
+
+.video-container iframe,  
+.video-container object,  
+.video-container embed {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#std-in{
+  width: 100%;
+  height: 50px;
+  margin-top: -10px;
+}
+
+#editor{
+  width: 100%;
+  height: 400px;
+}
+
+.logo{
+  position:absolute;
+  left: 100px;
+  top: 80px;
+  width: 381px;
+  height: 262px;
+}
+.dotbotlogo {
+  position:absolute;
+  left: 100px;
+  top: 140px;
+  
+}
+#std-out {
+  background: white;
+  padding: 10px;
+  height: 450px;
+  border: 1px solid;
+  margin-top: -10px;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+
+#std-in-row {
+}
+#rover-header {
+  top:-30px;
+  position:relative;
+}
+#rover-row {
+  top:-30px;
+  position:relative;
+}
+
+
+.CodeMirror {
+  height: 470px;
+  width: 100%;
+  float: right;
+  margin-top: -10px;
+}
+
+#std-in-row{
+  top: -45px;
+  position: relative;
+}
+
+#std-in-label{
+  margin-bottom: 20px;
+  z-index: 10;
+}
+
+#compile {
+  position: relative;
+  margin-top: 10px;
+  z-index: 20;
+}
+
+
+.rover-btn {
+  padding: 10px;
+  display: block;
+  margin: 0 auto;
+  width: 60%;
+  height: 40px;
+}
+
+.taglines {
+  padding-top: 50px;
+}
+
+.connect {
+  height: 440px;
+}
+
+.row-text {
+  line-height: 60px;
+}
+
+#connect-btn {
+  margin-top: 10px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
+p {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-weight: 300;
+}
+
+
+.description {
+  height: 500px;
+
+}
+
+.description-img {
+  max-height: 150px;
+}
+
+.gap {
+  height: 150px;
+}
+
+#dotbot{
+  margin-top: 20px;
+}
+
+.description-large{
+  height: 550px;
+}
+
+.gap-small {
+  height: 100px;
+}
+
+.gap-medium {
+  height: 200px;
+}
+
+.img-large {
+  max-height: 300px;
+}
+
+#img2 {
+  max-height: 200px;
+}
+
+body {
+  background: #eeeeee;
+}
+
