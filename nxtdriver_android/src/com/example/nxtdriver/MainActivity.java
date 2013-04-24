@@ -19,8 +19,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
@@ -42,13 +44,12 @@ public class MainActivity extends Activity{
 	ScheduledExecutorService background;
 	ScheduledExecutorService compile;
 	TextView sensor;
-	Button connectButton;
-	NumberPicker idpicker;
 	byte[][] motors = new byte[2][3];
 	byte[] received = new byte[3];
 	Compiler compiler;
 	boolean sending = false;
 	int id;
+	NumberPicker idpicker;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -60,18 +61,19 @@ public class MainActivity extends Activity{
 		server = Executors.newSingleThreadScheduledExecutor();
 		background = Executors.newSingleThreadScheduledExecutor();
 		compile = Executors.newSingleThreadScheduledExecutor();
-		connectButton = (Button)findViewById(R.id.connect);
+		Button connectButton = (Button)findViewById(R.id.connect);
 		//Button readButton = (Button)findViewById(R.id.read);
 		status = (TextView)findViewById(R.id.status);
 		sensor = (TextView)findViewById(R.id.sensor);
+
 		idpicker = (NumberPicker) findViewById(R.id.idpicker);
-		
+
 		idpicker.setOnValueChangedListener(new OnValueChangeListener() {
 			@Override
 			public void onValueChange(NumberPicker arg0, int arg1, int arg2) {
 				id = arg2;
 			}
-			
+
 		});
 
 		connectButton.setOnClickListener(new View.OnClickListener() {
@@ -81,37 +83,22 @@ public class MainActivity extends Activity{
 					findBT();
 					connectBT();
 					compile.execute(new dotbot());
-					
+
 					//readNXT.scheduleAtFixedRate(new read(), 0, 10, TimeUnit.MILLISECONDS);
 				} catch(Exception e) {
 					Log.v("nxtdriver", e.getMessage());
 				}
 			}
 		});
-
-		/*readButton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				Log.v("nxtdriver", "read initiated");
-				try {
-					Log.v("nxtdriverdistance", String.valueOf(mmInputStream.available()));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				readNXT.scheduleAtFixedRate(new Runnable() {
-					
-				}, 0, 5, TimeUnit.MILLISECONDS);}});*/
 	}
-	
+
 	public class read implements Runnable{
 		public void run(){
 			try {
 
 				if (mmInputStream.available()>0){
-				mmInputStream.read(received);
-				//Log.v("nxtdriver", received.toString());
-				Log.v("nxtdriverread", "distance: "+String.valueOf(received[2]));}
-				//else Log.v("nxtdriverread", "no bytes");
+					mmInputStream.read(received);
+					Log.v("nxtdriverread", "distance: "+String.valueOf(received[2]));}
 			} catch (Exception e) {
 				String error = e.getMessage();
 				Log.v("nxtdriverread", error);
@@ -119,25 +106,21 @@ public class MainActivity extends Activity{
 	}
 
 	public class dotbot implements Runnable{
-	public void run(){
-		String code = "{\"status\":\"\",\"definitions\":{},\"main\":[{\"fd\":{\"arg0\":\"3\"}},{\"rt\":{\"arg0\":\"1\"}},{\"fd\":{\"arg0\":\"5\"}}]}";
-		Log.v("nxtdriver","dotbot started");
-		compiler = new Compiler(code);
-		Log.v("nxtdriver","compiler instantiated");
-		
-		compiler.compile(compiler.main);
-		Log.v("nxtdriver","finished compiling");
-		change_motor(new boolean[] {true, true, true}, new byte[] {0,0,0}, 1);
-	}}
-	
-	public static String getHTML(String urlToRead) {
+		public void run(){
+			String code = getHTML();
+			compiler = new Compiler(code);
+			compiler.compile();
+			change_motor(new boolean[] {true, true, true}, new byte[] {0,0,0}, 1);
+		}}
+
+	public static String getHTML() {
 		URL url;
 		HttpURLConnection conn;
 		BufferedReader rd;
 		String line;
 		String result = "";
 		try {
-			url = new URL(urlToRead);
+			url = new URL("http://discos.herokuapp.com/io?from=slave&id=1");
 			conn = (HttpURLConnection) url.openConnection();
 			conn.setRequestMethod("GET");
 			rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -148,35 +131,66 @@ public class MainActivity extends Activity{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		System.out.println(result);
 		return result;
 	}
-	
-	public static void postHTML () throws IOException {
-		
-		URL url = new URL("http://discos.herokuapp.com/io?from=slave&id=1");
-		HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
-		httpCon.setDoOutput(true);
-		httpCon.setRequestMethod("POST");
-		OutputStreamWriter out = new OutputStreamWriter(
-		    httpCon.getOutputStream());
-		//needs to be changed to actuall sensors' readings
-		out.write("{status: \"active\", sensors: [22, 14, 0, 0], msg: \"ok\"}");
-		out.close();
-		
-	}
-	
-	public static int get_status() {
-		
-		JSONObject response = new JSONObject(getHTML("http://discos.herokuapp.com/io?from=slave&id=1"));
-		return response.getInt("status");
-		
-	}
-	
-	public static String get_code() {
-		
-		JSONObject response = new JSONObject(getHTML("http://discos.herokuapp.com/io?from=slave&id=1"));
-		return response.getString("code");
-		
+
+	public static String postHTML() throws UnsupportedEncodingException
+	{
+		String urlParameters =
+				"from=" + URLEncoder.encode("slave", "UTF-8") +
+				"&id=" + URLEncoder.encode("1", "UTF-8") +
+				"&status=" + URLEncoder.encode("ok", "UTF-8") +
+				"&sensors=" + URLEncoder.encode("READ SEANSORS HERE", "UTF-8") +
+				"&msg=" + URLEncoder.encode("ok", "UTF-8");
+		URL url;
+		HttpURLConnection connection = null;  
+		try {
+			//Create connection
+			url = new URL("http://discos.herokuapp.com/io");
+			connection = (HttpURLConnection)url.openConnection();
+			connection.setRequestMethod("POST");
+			connection.setRequestProperty("Content-Type", 
+					"application/x-www-form-urlencoded");
+
+			connection.setRequestProperty("Content-Length", "" + 
+					Integer.toString(urlParameters.getBytes().length));
+			connection.setRequestProperty("Content-Language", "en-US");  
+
+			connection.setUseCaches (false);
+			connection.setDoInput(true);
+			connection.setDoOutput(true);
+
+			//Send request
+			DataOutputStream wr = new DataOutputStream (
+					connection.getOutputStream ());
+			wr.writeBytes (urlParameters);
+			wr.flush ();
+			wr.close ();
+
+			//Get Response	
+			InputStream is = connection.getInputStream();
+			BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+			String line;
+			StringBuffer response = new StringBuffer(); 
+			while((line = rd.readLine()) != null) {
+				response.append(line);
+				response.append('\r');
+			}
+			rd.close();
+			return response.toString();
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			return null;
+
+		} finally {
+
+			if(connection != null) {
+				connection.disconnect(); 
+			}
+		}
 	}	
 
 	public void change_motor(boolean[] m, byte[] s, int d)
@@ -186,7 +200,7 @@ public class MainActivity extends Activity{
 			sendNXT.scheduleAtFixedRate(new send(), 0, 500, TimeUnit.MILLISECONDS);
 			sending = true;
 		}
-		
+
 		Log.v("nxtdriver","changing motor speed");
 		for (int i = 0; i<m.length; i++)
 		{
@@ -198,18 +212,18 @@ public class MainActivity extends Activity{
 			e.printStackTrace();
 		}
 	}
-	
+
 	public class send implements Runnable{
-	public void run()
-	{
-		try {
-			mmOutputStream.write(motors[0]);
-			Log.v("nxtdriversend", "size: "+mmOutputStream.size());
-			//Log.v("nxtdriversend",String.valueOf(motors[0][0])+ " "+String.valueOf(motors[0][1])+ " "+String.valueOf(motors[0][2]));
-		} catch (Exception e) {
-			Log.v("nxtdriversend",e.getMessage());
-		}
-	}}
+		public void run()
+		{
+			try {
+				mmOutputStream.write(motors[0]);
+				Log.v("nxtdriversend", "size: "+mmOutputStream.size());
+				//Log.v("nxtdriversend",String.valueOf(motors[0][0])+ " "+String.valueOf(motors[0][1])+ " "+String.valueOf(motors[0][2]));
+			} catch (Exception e) {
+				Log.v("nxtdriversend",e.getMessage());
+			}
+		}}
 
 
 	void findBT() throws Exception
@@ -250,7 +264,7 @@ public class MainActivity extends Activity{
 		mmInputStream = mmSocket.getInputStream();
 		status.setText("Connection Established");
 	}
-	
+
 	private class Compiler {
 
 		String CHECK = "";
@@ -265,6 +279,12 @@ public class MainActivity extends Activity{
 			this.definitions = superJSON.getJSONObject("definitions");		
 			this.main = superJSON.getJSONArray("main");
 			variables.add(new JSONObject());
+		}
+
+		public void compile () {
+
+			this.compile(this.main);
+
 		}
 
 		public void compile(JSONArray code) 
@@ -319,7 +339,7 @@ public class MainActivity extends Activity{
 					this.compile(copy.getJSONArray("code"));
 				}
 			}
-			
+
 			Log.v("nxtdrivercompile", "function name is:"+name+".");
 
 			if (name.equals("add")) { return add((String) function.get("arg0"),(String) function.get("arg1"));
