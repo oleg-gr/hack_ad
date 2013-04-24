@@ -7,7 +7,7 @@
     <link rel="stylesheet" type="text/css" href="/stylesheets/editor.css" />
     <link rel="stylesheet" type="text/css" href="/stylesheets/codemirror.css" />
     <link rel="stylesheet" type="text/css" href="/stylesheets/global_styles.css" />
-    <link rel= "stylesheet" type = "text/css" href = "/stylesheets/style.css"/>
+    <link rel= "stylesheet" type = "text/css" href = "/stylesheets/use.css"/>
     <script type="text/javascript" src="/javascripts/jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="/javascripts/codemirror.js"></script>
     <script type="text/javascript" src="/javascripts/tnt.js"></script>
@@ -25,12 +25,11 @@
           <a class="brand" href="/">DisCoS</a>
           <div class="nav-collapse collapse">
               <ul class="nav">
-                <li class="spy override active"><a href="#intro">Myo</a></li>
-                <li class="spy"><a href="#home">Home</a></li>
-                <li class="spy"><a href="#about">About</a></li>
-                <li class="spy"><a href="#idea">The Idea</a></li>
-                <li class="spy"><a href="#method">The Method</a></li>
-                <li class="spy"><a href="#implementation">The Implementation</a></li>
+                <li><a href="/#home">Home</a></li>
+                <li><a href="/#about">About</a></li>
+                <li><a href="/#idea">The Idea</a></li>
+                <li><a href="/#method">The Method</a></li>
+                <li><a href="/#implementation">The Implementation</a></li>
               </ul>
                 <a class="nav-button btn btn-success pull-right" href="/use/robo"> Connect to DisCoS</a>
           </div>
@@ -42,7 +41,7 @@
       <div class="row-fluid">
         <div class="span6">
           <h3> STDOUT </h3>
-          <div id="std-out">><br /></div>
+          <div id="std-out">>><br /></div>
         </div>
         <div class="span6">
           <h3>Start writing your code here:</h3>
@@ -55,7 +54,7 @@
       <div id="std-in-row" class="row-fluid">
         <div class="span12">
           <h3 id="std-in-label"> STDIN </h3>
-          <textarea id="std-in"> </textarea>
+          <textarea id="std-in"></textarea>
         </div>
       </div>
       <div id="rover-header" class="row-fluid">
@@ -85,5 +84,15 @@
     <div id="function-defs" class="container">
     </div>
   </div>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-39965374-3', 'herokuapp.com');
+  ga('send', 'pageview');
+
+  </script>
   </body>
 </html>

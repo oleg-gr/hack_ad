@@ -15,9 +15,23 @@ var parser =
 			});
 		parser.defs = {};
 		parser.main = parser.buildJSON(parser.code);
-		parser.superJSON = {"status":"", "definitions":parser.defs, "main":parser.main};
+		parser.superJSON = {"state":"inactive", "definitions":parser.defs, "main":parser.main};
 		if (typeof callback === 'function') callback(parser.superJSON);
 	},
+
+  parseSingle: function(str, callback){
+		var json = {};
+		var code = [];
+    var parsed_line = parser.format(str);
+    for (var i = 0; i<parsed_line.length; i++)
+    {
+      if (parsed_line[i] === "") parsed_line = parsed_line.splice(i, 1);
+    }
+    if (parsed_line[0] != [""]) code.push(parsed_line);
+    var main = parser.buildJSON(code);
+		var superJSON = {"state":"override", "main": main};
+		if (typeof callback === 'function') callback(superJSON);
+  },
 	
 	buildJSON: function(code)
 	{

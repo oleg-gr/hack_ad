@@ -48,11 +48,12 @@
 }
 
 .box {
-  padding: 3% 3% 3% 3%;
+  padding: 30px 50px 30px 50px;
 }
 
 .bordered {
-  background: #f9f9f9;
+  background: #ffffff;
+  box-shadow: 2px 2px 2px #888888;
 }
 
 .video-container {
@@ -85,19 +86,20 @@
 }
 
 .logo{
-	position:absolute;
-	left: 100px;
-	top: 80px;
-	width: 381px;
-	height: 262px;
+  position:absolute;
+  left: 100px;
+  top: 80px;
+  width: 381px;
+  height: 262px;
 }
 .dotbotlogo {
-	position:absolute;
-	left: 100px;
-	top: 140px;
-	
+  position:absolute;
+  left: 100px;
+  top: 140px;
+  
 }
 #std-out {
+  background: white;
   padding: 10px;
   height: 450px;
   border: 1px solid;
@@ -119,9 +121,9 @@
 
 
 .CodeMirror {
-	height: 470px;
+  height: 470px;
   width: 100%;
-	float: right;
+  float: right;
   margin-top: -10px;
 }
 
@@ -177,7 +179,7 @@ p {
 
 
 .description {
-  height: 520px;
+  height: 500px;
 
 }
 
@@ -214,13 +216,6 @@ p {
 }
 
 body {
-  background: #dedede;
+  background: #eeeeee;
 }
 
-div {
-  overflow: hidden;
-}
-strong {
-  color: #653090;
-  font-weight: 600;
-}

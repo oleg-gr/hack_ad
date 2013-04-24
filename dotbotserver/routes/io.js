@@ -22,7 +22,7 @@ mongo.Db.connect(mongoUri, {'w':1, 'safe': 'true'}, function(err, database){
 var removeFirst = function(id, collectionName, res){
   console.log("Retrieving first obj from " + id + " in collection: " + collectionName);
   db.collection(collectionName, function(err,collection){
-    collection.findOne({"id": parseInt(id, 10) }, function(err, doc){
+    collection.findOne({"id": id}, function(err, doc){
       if (err){
         console.log(err);
         res.write(JSON.stringify({status: 500, error: err}));
@@ -75,20 +75,20 @@ var listDB = function(res){
     collection.find().toArray(function(err, items){
       resp.inp = items;
       console.log(JSON.stringify({inp: items}));
-    });
-  });
-  db.collection("out", function(err, collection){
-    collection.find().toArray(function(err, items){
-      resp.out = items;
-      console.log(JSON.stringify({out: items}));
-    });
-  });
-  db.collection("alive", function(err, collection){
-    collection.find().toArray(function(err, items){
-      resp.alive = items;
-      console.log(JSON.stringify({alive: items}));
-      res.write(JSON.stringify(resp));
-      res.end();
+      db.collection("out", function(err, collection){
+        collection.find().toArray(function(err, items){
+          resp.out = items;
+          console.log(JSON.stringify({out: items}));
+          db.collection("alive", function(err, collection){
+            collection.find().toArray(function(err, items){
+              resp.alive = items;
+              console.log(JSON.stringify({alive: items}));
+              res.write(JSON.stringify(resp));
+              res.end();
+            });
+          });
+        });
+      });
     });
   });
 };
@@ -120,7 +120,7 @@ var alive = function(msg, res){
   delete msg.time;
   msg.time_received = new Date().getTime();
   db.collection("alive", function(err, collection){
-    collection.remove({"id": parseInt(msg.id, 10)}, function(err, num){
+    collection.remove({"id": msg.id}, function(err, num){
       collection.insert(msg, {safe: true}, function(err, result){
         if (err) {
           console.log(err);
@@ -147,9 +147,9 @@ var checkAlive = function(res){
       for (var i=0; i<items.length; i++){
         if (timeNow - items[i].time_received < 60000){
           // last response was within a minute
-          result.alive[parseInt(items[i].id, 10)] = true;
+          result.alive[items[i].id] = true;
         } else {
-          result.alive[parseInt(items[i].id, 10)] = false;
+          result.alive[items[i].id] = false;
         }
       }
       res.write(JSON.stringify(result));
