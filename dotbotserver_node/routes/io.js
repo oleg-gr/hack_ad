@@ -93,6 +93,7 @@ var listDB = function(res){
   });
 };
 
+
 var resetStream = function(id, res){
   console.log("Resetting stream: %d", id);
   db.collection("in").remove({id: id});

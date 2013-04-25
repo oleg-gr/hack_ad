@@ -1,12 +1,6 @@
 hack_ad
 =======
 
-SpaceApps Hackathon 2013, NYUAD team
-An educational platform, which promotes computer science, engineering and apce amongst kids. Kids are practically able to create their own mindstorms (running our custom firmware).
-The midstorm "talks" to an Android phone, which acts like a bridge, which is constantly pinging our server.
-Our server serves the child a javascript interpreter, where they program in a pseudo-python-turtle type language so they can learn about stuff like defining methods, loops and conditionals.
-The code children write is live:
-	when a child writes "fd(w)", the robor immediately starts moving forward for 2 seconds.
+DisCoS (Distributed Control System) is a framework for creating distributive intelligence within any group of networked devices. Its innovation comes from the idea of sending missions rather than commands. The master distributes dynamically generated high level programs that it sends throughout the network to controllers, in a sense, distributing partial autonomy and intelligence throughout the system whilst maintaing full centralized control. This is made possible by the .bot programming language we created specifically for DisCoS. We demonstrate one implementation of a full DisCoS system in creating the TNT learning & robotics platform, giving students the ability to write live code and dynamic programs that are immediately interpreted and run on Lego NXT rovers on the fly
 
-The goal is to teach kids not only about engineering and computer science, but also about the advantage of building more autonomous systems, like writing larger methods.
-The system is going to work with a delay naturally imitating the way NASA works with delay on their rovers.
+The current site is live here: discos.herokuapp.com
