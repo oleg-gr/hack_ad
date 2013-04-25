@@ -7,6 +7,8 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.NumberPicker;
+import android.widget.NumberPicker.OnValueChangeListener;
 import android.widget.TextView;
 import android.util.Log;
 import android.view.View;
@@ -16,9 +18,11 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
@@ -44,6 +48,10 @@ public class MainActivity extends Activity{
 	byte[] received = new byte[3];
 	Compiler compiler;
 	boolean sending = false;
+	int id;
+	NumberPicker idpicker;
+	String get;
+	
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -60,6 +68,16 @@ public class MainActivity extends Activity{
 		status = (TextView)findViewById(R.id.status);
 		sensor = (TextView)findViewById(R.id.sensor);
 
+		idpicker = (NumberPicker) findViewById(R.id.idpicker);
+
+		idpicker.setOnValueChangedListener(new OnValueChangeListener() {
+			@Override
+			public void onValueChange(NumberPicker arg0, int arg1, int arg2) {
+				id = arg2;
+			}
+
+		});
+
 		connectButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				try
@@ -67,37 +85,22 @@ public class MainActivity extends Activity{
 					findBT();
 					connectBT();
 					compile.execute(new dotbot());
-					
-					//readNXT.scheduleAtFixedRate(new read(), 0, 10, TimeUnit.MILLISECONDS);
+
+					readNXT.scheduleAtFixedRate(new read(), 0, 10, TimeUnit.MILLISECONDS);
 				} catch(Exception e) {
 					Log.v("nxtdriver", e.getMessage());
 				}
 			}
 		});
-
-		/*readButton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				Log.v("nxtdriver", "read initiated");
-				try {
-					Log.v("nxtdriverdistance", String.valueOf(mmInputStream.available()));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				readNXT.scheduleAtFixedRate(new Runnable() {
-					
-				}, 0, 5, TimeUnit.MILLISECONDS);}});*/
 	}
-	
+
 	public class read implements Runnable{
 		public void run(){
 			try {
 
 				if (mmInputStream.available()>0){
-				mmInputStream.read(received);
-				//Log.v("nxtdriver", received.toString());
-				Log.v("nxtdriverread", "distance: "+String.valueOf(received[2]));}
-				//else Log.v("nxtdriverread", "no bytes");
+					mmInputStream.read(received);
+					Log.v("nxtdriverread", "distance: "+String.valueOf(received[2]));}
 			} catch (Exception e) {
 				String error = e.getMessage();
 				Log.v("nxtdriverread", error);
@@ -105,70 +108,130 @@ public class MainActivity extends Activity{
 	}
 
 	public class dotbot implements Runnable{
-	public void run(){
-		String code = "{\"status\":\"\",\"definitions\":{},\"main\":[{\"fd\":{\"arg0\":\"3\"}},{\"rt\":{\"arg0\":\"1\"}},{\"fd\":{\"arg0\":\"5\"}}]}";
-		Log.v("nxtdriver","dotbot started");
-		compiler = new Compiler(code);
-		Log.v("nxtdriver","compiler instantiated");
-		
-		compiler.compile(compiler.main);
-		Log.v("nxtdriver","finished compiling");
-		change_motor(new boolean[] {true, true, true}, new byte[] {0,0,0}, 1);
-	}}
-	
-	public static String getHTML(String urlToRead) {
-		URL url;
+		public void run(){
+			getHTML htmlclass = new getHTML();
+			Log.v("nxtget", "starting get");
+			htmlclass.run();
+			String code = get;
+			Log.v("nxtget", get);
+			compiler = new Compiler(code);
+			
+			server.scheduleAtFixedRate(htmlclass, 0, 1, TimeUnit.SECONDS);
+			server.scheduleAtFixedRate(new postHTML(), 0, 1, TimeUnit.SECONDS);
+			compiler.compile();
+			change_motor(new boolean[] {true, true, true}, new byte[] {0,0,0}, 1);
+		}}
+
+	public class getHTML implements Runnable{
+		URL url ;
 		HttpURLConnection conn;
 		BufferedReader rd;
 		String line;
-		String result = "";
+
+		public getHTML(){
+			
+			try {
+				url = new URL("http://discos.herokuapp.com/io?from=slave&id=1");
+				Log.v("nxtget", "1");
+				conn = (HttpURLConnection) url.openConnection();
+				Log.v("nxtget", "2");
+				conn.setRequestMethod("GET");
+				Log.v("nxtget", "3");
+				rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+				//conn.getInputStream();
+
+				Log.v("nxtget", "4");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				Log.v("nxtget", "error is: "+ e.getMessage());
+				Log.v("nxtget", "cause is: "+ e.getCause());
+			}
+			
+		}
+
+		public void run() {
+			//Log.v("nxtget", "running get");
+			get = "";
+			try {
+				//Log.v("nxtget", "starting loop");
+				while ((line = rd.readLine()) != null) {
+					get += line;
+				}
+				//Log.v("nxtget", "loop done");
+			} catch (Exception e) {
+				Log.v("nxtget", "error in run: " + e.getMessage());
+			}
+		}
+	}
+
+	public class postHTML implements Runnable{
+	public void run()
+	{
+		String urlParameters = null;
 		try {
-			url = new URL(urlToRead);
-			conn = (HttpURLConnection) url.openConnection();
-			conn.setRequestMethod("GET");
-			rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			while ((line = rd.readLine()) != null) {
-				result += line;
+			urlParameters = "from=" + URLEncoder.encode("slave", "UTF-8") +
+			"&id=" + URLEncoder.encode("1", "UTF-8") +
+			"&status=" + URLEncoder.encode("ok", "UTF-8") +
+			"&sensors=" + URLEncoder.encode(String.valueOf(received[2]), "UTF-8") +
+			"&msg=" + URLEncoder.encode("ok", "UTF-8");
+		} catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		URL url;
+		HttpURLConnection connection = null;  
+		try {
+			//Create connection
+			url = new URL("http://discos.herokuapp.com/io");
+			connection = (HttpURLConnection)url.openConnection();
+			connection.setRequestMethod("POST");
+			connection.setRequestProperty("Content-Type", 
+					"application/x-www-form-urlencoded");
+
+			connection.setRequestProperty("Content-Length", "" + 
+					Integer.toString(urlParameters.getBytes().length));
+			connection.setRequestProperty("Content-Language", "en-US");  
+
+			connection.setUseCaches (false);
+			connection.setDoInput(true);
+			connection.setDoOutput(true);
+
+			//Send request
+			DataOutputStream wr = new DataOutputStream (
+					connection.getOutputStream ());
+			wr.writeBytes (urlParameters);
+			wr.flush ();
+			wr.close ();
+
+			//Get Response	
+			InputStream is = connection.getInputStream();
+			BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+			String line;
+			StringBuffer response = new StringBuffer(); 
+			while((line = rd.readLine()) != null) {
+				response.append(line);
+				response.append('\r');
 			}
 			rd.close();
+
 		} catch (Exception e) {
+
 			e.printStackTrace();
+
+		} finally {
+
+			if(connection != null) {
+				connection.disconnect(); 
+			}
 		}
-		return result;
-	}
-	
-	public static void postHTML () throws IOException {
-		
-		URL url = new URL("http://discos.herokuapp.com/io?from=slave&id=1");
-		HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
-		httpCon.setDoOutput(true);
-		httpCon.setRequestMethod("POST");
-		OutputStreamWriter out = new OutputStreamWriter(
-		    httpCon.getOutputStream());
-		//needs to be changed to actuall sensors' readings
-		out.write("{status: \"active\", sensors: [22, 14, 0, 0], msg: \"ok\"}");
-		out.close();
-		
-	}
-	
-	public static int get_status() {
-		
-		JSONObject response = new JSONObject(getHTML("http://discos.herokuapp.com/io?from=slave&id=1"));
-		return response.getInt("status");
-		
-	}
-	
-	public static String get_code() {
-		
-		JSONObject response = new JSONObject(getHTML("http://discos.herokuapp.com/io?from=slave&id=1"));
-		return response.getString("code");
-		
-	}	
+	}	}
 
 	public void change_motor(boolean[] m, byte[] s, int d)
 	{
+		Log.v("nxtcompile", "got into change_motor");
 		if(!sending)
 		{
+			Log.v("nxtsend", "starting send");
 			sendNXT.scheduleAtFixedRate(new send(), 0, 500, TimeUnit.MILLISECONDS);
 			sending = true;
 		}
@@ -184,18 +247,18 @@ public class MainActivity extends Activity{
 			e.printStackTrace();
 		}
 	}
-	
+
 	public class send implements Runnable{
-	public void run()
-	{
-		try {
-			mmOutputStream.write(motors[0]);
-			Log.v("nxtdriversend", "size: "+mmOutputStream.size());
-			//Log.v("nxtdriversend",String.valueOf(motors[0][0])+ " "+String.valueOf(motors[0][1])+ " "+String.valueOf(motors[0][2]));
-		} catch (Exception e) {
-			Log.v("nxtdriversend",e.getMessage());
-		}
-	}}
+		public void run()
+		{
+			try {
+				mmOutputStream.write(motors[0]);
+				Log.v("nxtdriversend", "size: "+mmOutputStream.size());
+				Log.v("nxtdriversend",String.valueOf(motors[0][0])+ " "+String.valueOf(motors[0][1])+ " "+String.valueOf(motors[0][2]));
+			} catch (Exception e) {
+				Log.v("nxtdriversend",e.getMessage());
+			}
+		}}
 
 
 	void findBT() throws Exception
@@ -236,7 +299,7 @@ public class MainActivity extends Activity{
 		mmInputStream = mmSocket.getInputStream();
 		status.setText("Connection Established");
 	}
-	
+
 	private class Compiler {
 
 		String CHECK = "";
@@ -248,13 +311,21 @@ public class MainActivity extends Activity{
 		public Compiler(String jsonstring) 
 		{
 			JSONObject superJSON = new JSONObject(jsonstring);
+			Log.v("nxtget", jsonstring);
 			this.definitions = superJSON.getJSONObject("definitions");		
 			this.main = superJSON.getJSONArray("main");
 			variables.add(new JSONObject());
 		}
 
+		public void compile () {
+
+			this.compile(this.main);
+
+		}
+
 		public void compile(JSONArray code) 
 		{
+			
 			JSONArray copy = new JSONArray(code.toString());
 			for (int i = 0; i < code.length(); i++) 
 			{
@@ -305,7 +376,7 @@ public class MainActivity extends Activity{
 					this.compile(copy.getJSONArray("code"));
 				}
 			}
-			
+
 			Log.v("nxtdrivercompile", "function name is:"+name+".");
 
 			if (name.equals("add")) { return add((String) function.get("arg0"),(String) function.get("arg1"));
@@ -348,13 +419,13 @@ public class MainActivity extends Activity{
 
 			} else if (name.equals("motorABC")) { motorABC((String) function.get("arg0"),(String) function.get("arg1"), (String) function.get("arg2"), (String) function.get("arg3"));
 
-			} else if (name.equals("forward") || name.equals("fd")) {motorAB("80", "80", String.valueOf(Integer.parseInt((String)function.get("arg0"))*1000));
+			} else if (name.equals("forward") || name.equals("fd")) {motorAB("80", "80", String.valueOf(Integer.parseInt(lookup(((String)function.get("arg0"))))*1000));
 
-			} else if (name.equals("backward") || name.equals("bd")) { motorAB("-80", "-80", String.valueOf(Integer.parseInt((String)function.get("arg0"))*1000));
+			} else if (name.equals("backward") || name.equals("bd")) { motorAB("-80", "-80", String.valueOf(Integer.parseInt(lookup(((String)function.get("arg0"))))*1000));
 
-			} else if (name.equals("right") || name.equals("rt")) { motorAB("0", "80", String.valueOf(Integer.parseInt((String)function.get("arg0"))*1000));
+			} else if (name.equals("right") || name.equals("rt")) { motorAB("0", "80", String.valueOf(Integer.parseInt(lookup(((String)function.get("arg0"))))*1000));
 
-			} else if (name.equals("left") || name.equals("lt")) { motorAB("80", "0", String.valueOf(Integer.parseInt((String)function.get("arg0"))*1000));
+			} else if (name.equals("left") || name.equals("lt")) { motorAB("80", "0", String.valueOf(Integer.parseInt(lookup(((String)function.get("arg0"))))*1000));
 
 			}
 
@@ -398,31 +469,33 @@ public class MainActivity extends Activity{
 		}
 
 		private void motorA(String x, String y) {
-			change_motor(new boolean[] {true, false, false}, new byte[] {Byte.parseByte(x)}, Integer.parseInt(y));
+			change_motor(new boolean[] {true, false, false}, new byte[] {Byte.parseByte(lookup(x))}, Integer.parseInt(lookup(y)));
 		}
 
 		private void motorB(String x, String y) {
-			change_motor(new boolean[] {false, true, false}, new byte[] {Byte.parseByte(x)}, Integer.parseInt(y));
+			change_motor(new boolean[] {false, true, false}, new byte[] {Byte.parseByte(lookup(x))}, Integer.parseInt(lookup(y)));
 		}
 
 		private void motorC(String x, String y) {
-			change_motor(new boolean[] {false, false, true}, new byte[] {Byte.parseByte(x)}, Integer.parseInt(y));
+			change_motor(new boolean[] {false, false, true}, new byte[] {Byte.parseByte(lookup(x))}, Integer.parseInt(lookup(y)));
 		}
 
 		private void motorAB(String x1, String x2, String y) {
-			change_motor(new boolean[] {true, true, false}, new byte[] {Byte.parseByte(x1), Byte.parseByte(x2)}, Integer.parseInt(y));
+			Log.v("nxtcompile", "got into AB");
+			change_motor(new boolean[] {true, true, false}, new byte[] {Byte.parseByte(lookup(x1)), Byte.parseByte(lookup(x2))}, Integer.parseInt(lookup(y)));
+			Log.v("nxtcompile", "exited AB");
 		}
 
 		private void motorAC(String x1, String x2, String y) {
-			change_motor(new boolean[] {true, false, true}, new byte[] {Byte.parseByte(x1), Byte.parseByte(x2)}, Integer.parseInt(y));
+			change_motor(new boolean[] {true, false, true}, new byte[] {Byte.parseByte(lookup(x1)), Byte.parseByte(lookup(x2))}, Integer.parseInt(lookup(y)));
 		}
 
 		private void motorBC(String x1, String x2, String y) {
-			change_motor(new boolean[] {false, true, true}, new byte[] {Byte.parseByte(x1), Byte.parseByte(x2)}, Integer.parseInt(y));
+			change_motor(new boolean[] {false, true, true}, new byte[] {Byte.parseByte(lookup(x1)), Byte.parseByte(lookup(x2))}, Integer.parseInt(lookup(y)));
 		}
 
 		private void motorABC(String x1, String x2, String x3, String y) {
-			change_motor(new boolean[] {true, true, true}, new byte[] {Byte.parseByte(x1), Byte.parseByte(x2), Byte.parseByte(x3)}, Integer.parseInt(y));
+			change_motor(new boolean[] {true, true, true}, new byte[] {Byte.parseByte(lookup(x1)), Byte.parseByte(lookup(x2)), Byte.parseByte(lookup(x3))}, Integer.parseInt(lookup(y)));
 		}
 
 		private void assign(String x, String y) 
