@@ -1,38 +1,19 @@
 /*javascript editor behaviour*/
 var editor =
 {
-	init: function()
+	init: function(id)
 	{
-		var textArea = document.getElementById("editor");
+		var textArea = document.getElementById(id);
 		this.doc = CodeMirror.fromTextArea(textArea, {
 			mode: "tnt",
 			indentUnit: 3,
 			tabSize: 3,
 			lineNumbers: true,
-			autofocuse: true,
+			autofocus: true,
 			highlightSelectionMatches: true,
 			styleActiveLine: true
 			});
 			
-		this.doc.setValue("#Program\ndefine patrol(x) do\n\tforward(x)\n\tlt(180)\n\tforward(x)\n\trt(180)\nend");
+		this.doc.setValue("#Program\ndefine patrol(x) do\n\tforward(x)\n\tlt(180)\n\tforward(x)\n\trt(180)\nend\n\n#Patroling, 10cm\npatrol(10)");
 	},
-/*		
-	find:function() {
-	
-		this.doc.cursor = this.doc.getSearchCursor($("#search").val())
-	
-	},
-	
-	findn:function() {
-	
-		this.doc.cursor.findNext();
-	
-	},
-	
-	findp:function () {
-	
-		this.doc.cursor.findPrevious();
-
-	}
-*/
 }

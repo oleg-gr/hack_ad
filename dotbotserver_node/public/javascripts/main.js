@@ -5,7 +5,7 @@ var main =
   state: {},
 	init: function()
 	{
-		editor.init();
+		editor.init("editor");
 	}
   
 };
