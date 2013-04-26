@@ -15,7 +15,7 @@ var parser =
 			});
 		parser.defs = {};
 		parser.main = parser.buildJSON(parser.code);
-		parser.superJSON = {"state":"inactive", "definitions":parser.defs, "main":parser.main};
+		parser.superJSON = {"state":"active", "definitions":parser.defs, "main":parser.main};
 		if (typeof callback === 'function') callback(parser.superJSON);
 	},
 
@@ -190,7 +190,7 @@ var parser =
 		line = line.replace(/#+.*/g, "");
 		line = line.replace(/\s*([/*/+-//=]+)\s*/g, "$1");
 		line = line.replace(/\s+/g, " ");
-		line = line.replace(/"(.*)?"/, '^$1');
+		line = line.replace(/"(.*)?"/, "^$1");
 		line = line.split(/\s/);
 		return line;
 	},
