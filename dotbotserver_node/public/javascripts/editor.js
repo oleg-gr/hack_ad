@@ -1,9 +1,9 @@
 /*javascript editor behaviour*/
 var editor =
 {
-	init: function()
+	init: function(id)
 	{
-		var textArea = document.getElementById("editor");
+		var textArea = document.getElementById(id);
 		this.doc = CodeMirror.fromTextArea(textArea, {
 			mode: "tnt",
 			indentUnit: 3,
