@@ -36,15 +36,19 @@ var parseObject = function(json, callback){
   if (typeof callback === 'function') callback();
 };
 
-var stdIn = function(){
+var stdIn = function(str){
   if (str == "start()"){
-    postObject({state: "active", from: "master", id: activeID});
+    obj = {state: "active", from: "master", id: activeId};
   } else if (str == "pause()"){
-    postObject({state: "paused", from: "master", id: activeID});
+    obj = {state: "paused", from: "master", id: activeId};
   } else if (str == "stop()"){
-    postObject({state: "inactive", from: "master", id: activeID});
+    obj = {state: "inactive", from: "master", id: activeId};
   }
-  str = $('#std-in').val();
+  if (obj){
+    postObject(obj, function(resp){
+      printConsole(obj);
+    });
+  }
   $('#std-in').val('');
   parseJSON(str, function(json){
     json.from = 'master';
@@ -81,10 +85,13 @@ $(document).ready(function() {
       if (e.shiftKey === true){
       } else {
         e.preventDefault();
-        stdIn();
+        stdIn($('#std-in').val());
       }
     }
   });
 
 });
 
+$(function () {
+    $('#tabs a:last').tab('show');
+});

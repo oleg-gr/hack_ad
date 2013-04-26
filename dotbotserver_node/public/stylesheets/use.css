@@ -219,3 +219,6 @@ body {
   background: #eeeeee;
 }
 
+#status-row {
+  margin: 0px;
+}

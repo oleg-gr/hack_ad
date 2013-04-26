@@ -96,10 +96,15 @@ var listDB = function(res){
 
 var resetStream = function(id, res){
   console.log("Resetting stream: %d", id);
-  db.collection("in").remove({id: id});
-  db.collection("out").remove({id: id});
-  res.write(JSON.stringify({'success': true}));
-  res.end();
+  db.collection("in").remove({id: id}, function(err, resp){
+    if (err){
+      res.write(err);
+      res.end();
+    } else {
+      res.write(JSON.stringify({'success': true}));
+      res.end();
+    }
+  });
 };
 
 var resetAll = function(res){

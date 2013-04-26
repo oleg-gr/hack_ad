@@ -14,6 +14,7 @@
     <script type="text/javascript" src="/javascripts/placeholder.js"></script>
     <script type="text/javascript" src="/javascripts/editor.js"></script>
     <script type="text/javascript" src="/javascripts/parser.js"></script>
+    <script type="text/javascript" src="/javascripts/bootstrap.js"></script>
     <script type="text/javascript" src="/javascripts/main.js"></script>
     <script type="text/javascript" src="/javascripts/syntax.js"></script>
   </head>
@@ -37,26 +38,86 @@
     </div>
   </div>
   <div id="body">
-    <div class="container">
-      <div class="row-fluid">
-        <div class="span6">
-          <h3> STDOUT </h3>
-          <div id="std-out">>><br /></div>
+    <div id="status-row" class="row-fluid">
+      <div id="status" class="span6">
+      </div>
+      <div id="selectors" class="span4">
+        <ul id="tabs" class="nav nav-tabs">
+          <li ><a href="#console0" data-toggle="tab">No Rover Selected</a></li>
+          <li ><a href="#console1" data-toggle="tab">Rover 1</a></li>
+          <li ><a href="#console2" data-toggle="tab">Rover 2</a></li>
+        </ul>
+      </div>
+      <div class="span2">
+        <a class="btn">Connect to New Rover</a>
+      </div>
+    </div>
+    <div class="tab-content">
+      <div id="console0" class="tab-pane fade container">
+        <div class="row-fluid">
+          <div class="span6">
+            <h3> STDOUT </h3>
+            <div id="std-out">>><br /></div>
+          </div>
+          <div class="span6">
+            <h3>Start writing your code here:</h3>
+            <textarea id="editor" name="editor" placeholder="Start programming here.."></textarea>
+            <div id="controls" class="left">
+              <a id="compile" class="btn btn-large btn-primary pull-right" >Compile!</a>
+            </div>
+          </div>
         </div>
-        <div class="span6">
-          <h3>Start writing your code here:</h3>
-          <textarea id="editor" name="editor" placeholder="Start programming here.."></textarea>
-          <div id="controls" class="left">
-            <a id="compile" class="btn btn-large btn-primary pull-right" >Compile!</a>
+        <div id="std-in-row" class="row-fluid">
+          <div class="span12">
+            <h3 id="std-in-label"> STDIN </h3>
+            <textarea id="std-in"></textarea>
           </div>
         </div>
       </div>
-      <div id="std-in-row" class="row-fluid">
-        <div class="span12">
-          <h3 id="std-in-label"> STDIN </h3>
-          <textarea id="std-in"></textarea>
+      <div id="console1" class="tab-pane fade container">
+        <div class="row-fluid">
+          <div class="span6">
+            <h3> STDOUT </h3>
+            <div id="std-out">>><br /></div>
+          </div>
+          <div class="span6">
+            <h3>Start writing your code here:</h3>
+            <textarea id="editor" name="editor" placeholder="Start programming here.."></textarea>
+            <div id="controls" class="left">
+              <a id="compile" class="btn btn-large btn-primary pull-right" >Compile!</a>
+            </div>
+          </div>
+        </div>
+        <div id="std-in-row" class="row-fluid">
+          <div class="span12">
+            <h3 id="std-in-label"> STDIN </h3>
+            <textarea id="std-in"></textarea>
+          </div>
         </div>
       </div>
+      <div id="console2" class="tab-pane fade container">
+        <div class="row-fluid">
+          <div class="span6">
+            <h3> STDOUT </h3>
+            <div id="std-out">>><br /></div>
+          </div>
+          <div class="span6">
+            <h3>Start writing your code here:</h3>
+            <textarea id="editor" name="editor" placeholder="Start programming here.."></textarea>
+            <div id="controls" class="left">
+              <a id="compile" class="btn btn-large btn-primary pull-right" >Compile!</a>
+            </div>
+          </div>
+        </div>
+        <div id="std-in-row" class="row-fluid">
+          <div class="span12">
+            <h3 id="std-in-label"> STDIN </h3>
+            <textarea id="std-in"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="info" class="container">
       <div id="rover-header" class="row-fluid">
         <h3> Rover States: </h3>
       </div>
