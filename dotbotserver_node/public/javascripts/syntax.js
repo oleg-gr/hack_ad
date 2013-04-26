@@ -82,7 +82,7 @@ var syntax = {
         	syntax.out("Unmatched 'do' at line", start);
         	return false;
         }
-        syntax.out("Syntax checked. Errors ", 0);
+        syntax.out("Syntax checked. Errors ", -1);
 		return true;	
 	},
 	
