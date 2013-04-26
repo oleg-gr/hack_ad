@@ -1,14 +1,5 @@
-activeId = "1";
-
-var main = 
-{
-  state: {},
-	init: function()
-	{
-		editor.init("editor");
-	}
-  
-};
+activeId = "0";
+activeIds = ["0"];
 
 var masterUpdate = function(id_list, callback){
   for (var i = 0; i < id_list.length; i++){
@@ -17,8 +8,8 @@ var masterUpdate = function(id_list, callback){
 };
 
 var printConsole = function(text){
-  $('#std-out').append(text + '<br />>> ');
-  var stdOut = document.getElementById("std-out");
+  $('#std-out-' + activeId).append(text + '<br />>> ');
+  var stdOut = document.getElementById("std-out-" + activeId);
   stdOut.scrollTop = stdOut.scrollHeight;
 };
 
@@ -37,6 +28,7 @@ var parseObject = function(json, callback){
 };
 
 var stdIn = function(str){
+  obj = null;
   if (str == "start()"){
     obj = {state: "active", from: "master", id: activeId};
   } else if (str == "pause()"){
@@ -44,7 +36,7 @@ var stdIn = function(str){
   } else if (str == "stop()"){
     obj = {state: "inactive", from: "master", id: activeId};
   }
-  if (obj){
+  if (obj !== null){
     postObject(obj, function(resp){
       printConsole(obj);
     });
@@ -70,17 +62,15 @@ var parseJSON = function(string, callback){
 };
 
 $(document).ready(function() {
-  main.init();
   $("#compile").on("click", function() {
     if (syntax.check(editor.doc)) {
       parser.parse(editor.doc, function(obj){
         obj.from = 'master';
         obj.id = activeId;
-        JSON.stringify(obj, null, 4); 
         postObject(obj);});
     }
   });
-  $('#std-in').bind('keypress', function(e){
+  $('.std-in').on('keypress', function(e){
     if (e.keyCode == 13){
       if (e.shiftKey === true){
       } else {
@@ -90,8 +80,73 @@ $(document).ready(function() {
     }
   });
 
+  $('#rover-row').on('click', '.rover-btn.disabled', function(e){
+    e.preventDefault();
+  });
+  $('#rover-row').on('click', '.rover-btn.btn-success', function(e){
+    e.preventDefault();
+    deleteTab(e.currentTarget.id.split('-').pop()); return false;
+  });
+  $('#rover-row').on('click', '.rover-btn.btn-primary', function(e){
+    e.preventDefault();
+    createTab(e.currentTarget.id.split('-').pop()); return false;
+  });
+  $("#tabs").on('click', 'li', function(e){
+    e.preventDefault();
+    switchTab(e.currentTarget.id.split('-').pop());
+  });
 });
 
+
+
+var switchTab = function(id){
+  activeId = id;
+  $('#tab-' + id + ' a').tab('show');
+  
+};
+
+var createTab = function(id){
+  $('<li id="tab-' + id + '"></li>').html($('<a href="#console-' + id + '" data-toggle="tab">Rover' + id + '</a>')).insertBefore('#plus');
+  $('#tab-content').append('<div id="console-' + id + '" class="tab-pane fade container">' +
+        '<div class="row-fluid">' +
+          '<div class="span6">' +
+            '<h3> STDOUT </h3>' +
+            '<div id="std-out-' + id + '" class="std-out">>><br /></div>' +
+          '</div>' +
+          '<div class="span6">' +
+            '<h3>Start writing your code here:</h3>' +
+            '<textarea id="editor-' + id + '" name="editor" placeholder="Start programming here.."></textarea>' +
+          '</div>' +
+        '</div>' +
+      '</div>');
+  switchTab(id);
+  $('#rover-' + id).toggleClass("btn-success btn-primary");
+  $('#rover-' + id + ' span').html("Connected");
+  editor.init("editor-" + id);
+  if ($('#tabs li').length == 3){
+    $('#console-0').hide();
+    $('#tab-0').hide();
+    window.scrollTo(0,0);
+  }
+  activeIds.push(id);
+};
+
+var deleteTab = function(id){
+  $('#console-' + id).remove();
+  $('#tab-' + id).remove();
+  activeIds.splice(activeIds.indexOf(id),1);
+  if ($('#tabs li').length == 2){
+    $('#console-0').show();
+    $('#tab-0').addClass('active').show();
+    switchTab("0");
+  } else{
+    switchTab($('#tabs li').eq(1).attr('id').split('-').pop());
+  }
+  $('#rover-' + id).toggleClass("btn-success btn-primary");
+  $('#rover-' + id + ' span').html("Ready");
+};
+
 $(function () {
-    $('#tabs a:last').tab('show');
+  $('#tabs a:first').tab('show');
+  editor.init("editor-0");
 });
