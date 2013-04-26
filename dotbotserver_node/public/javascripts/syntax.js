@@ -10,20 +10,20 @@ var syntax = {
         	var line = doc.getLine(i);
         	if (line.split("(").length != line.split(")").length) {
         		this.hl(i);
-        		syntax.out("Unmatched braces at line", i+1);
+        		syntax.out("Unmatched braces at line", i);
         		return false;
         	}
         	
-			/*if ((line.indexOf("while") != -1 || line.indexOf("if") != -1) && ((line.indexOf("true") == -1 && line.indexOf("==") == -1 && line.indexOf(">") == -1 && line.indexOf("false") == -1 && line.indexOf("<") == -1 && line.indexOf("!=") == -1) || (line.indexOf("<<") != -1 || line.indexOf(">>") != -1 || line.indexOf("!==") != -1))) {
-				this.hl(i);
-        		syntax.out("Condition not found or not properly defined at line", i+1);
-        		return false;
-			} */
-        	
+        	if (line.indexOf("return") != -1 && line.substring(line.indexOf("("),line.indexOf(")")).indexOf(",") != -1) {
+        		this.hl(i);
+        		syntax.out("Return takes exactly one argument, but more arguments found at line", i)
+       
+        	}
+        	        	
         	if (line.indexOf("define") != -1) {
 				if (line.indexOf("(") == -1) {
         			this.hl(i);
-        			syntax.out("Function is found but no braces found", i+1);
+        			syntax.out("Function is found but no braces found", i);
         			return false;
         		}
         		else {
@@ -32,14 +32,14 @@ var syntax = {
         			for (k in function_name) {
         				if (parseInt(function_name[k])) {
         					this.hl(i);
-        					syntax.out("Name of the function expected but integer found at line", i+1);        					
+        					syntax.out("Name of the function expected but integer found at line", i);        					
         					return false;
         				}
         				if (function_name[k] != "") {
         					count++;
         					if (count>2) {
         						this.hl(i);
-        						syntax.out("Name of the function is a single word. Error at line", i+1);        				
+        						syntax.out("Name of the function is a single word. Error at line", i);        				
         						return false;
         					}	
         				}
@@ -51,7 +51,7 @@ var syntax = {
         		
         		if  (line.indexOf("do")==-1) {
         			this.hl(i);
-        			syntax.out("Cannot find start of a block indicator 'do' at line", i+1);        	
+        			syntax.out("Cannot find start of a block indicator 'do' at line", i);        	
         			return false;
         		}
         		
@@ -70,7 +70,7 @@ var syntax = {
         		
         		if (depth < 0) {
         			this.hl(i);
-        			syntax.out("Unmatched 'end' at line", i+1);        	
+        			syntax.out("Unmatched 'end' at line", i);        	
         			return false;
         		}
         	}
@@ -79,7 +79,7 @@ var syntax = {
         
 		if (depth > 0) {
         	this.hl(start);
-        	syntax.out("Unmatched 'do' at line", start+1);
+        	syntax.out("Unmatched 'do' at line", start);
         	return false;
         }
         syntax.out("Syntax checked. Errors ", 0);
@@ -101,7 +101,7 @@ var syntax = {
 	},
     
     out: function (m,n) {
-    	$("#std-out").append('>> ' + m + ' ' + n + '<br />');
+    	$("#std-out").append('>> ' + m + ' ' + (n+1) + '<br />');
     }
     
 	

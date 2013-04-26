@@ -4,8 +4,8 @@ CodeMirror.defineMode("tnt", function(config) {
     for (var i = 0, e = words.length; i < e; ++i) o[words[i]] = true;
     return o;
   }
-  var keywords = wordObj(["and", "begin", "define", "do", "else",
-    "else if","end", "false", "if", "or", "true", "while", "print", "fd","forward","lt","left","rt", "right", "bd", "backword"
+  var keywords = wordObj(["and", "begin", "define", "do", "else", "else if","end", "false", "if", 
+  "or", "true", "while", "print", "fd","forward","lt","left","rt", "right", "bd", "backward", "return"
   ]);
   var indentWords = wordObj(["do"]);
   var dedentWords = wordObj(["end", "else"]);
