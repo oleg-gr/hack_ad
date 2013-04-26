@@ -1,1 +1,0 @@
-{"status":"","definitions":{"say":{"args":{"arg0":"x"},"code":[{"while":{"condition":{"greater_than":{"arg0":"x","arg1":"2"}},"code":[{"assign":{"arg0":"x","arg1":{"sub":{"arg0":"x","arg1":"1"}}},"print":{"arg0":"x"}}]}}]}},"main":[{"say":{"arg0":"5"}},{"say":{"arg0":"4"}}]}
