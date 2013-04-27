@@ -185,13 +185,31 @@ var parser =
 	
 	format: function(line)
 	{
-		line = parser.remParSpace(line);
+		console.log("initial: "+line);
 		line = line.trim();
+		console.log("trim: "+line);
+		line = parser.remParSpace(line);
+		console.log("remove spaces inside (): "+line);
+		//remove comments
 		line = line.replace(/#+.*/g, "");
-		line = line.replace(/\s*([/*/+-//=]+)\s*/g, "$1");
+		console.log("remove comments: "+line);
+		//remove double spaces
 		line = line.replace(/\s+/g, " ");
+		console.log("remove x2 spaces: "+line);
+		//remove spaces before parentheses
+		line = line.replace(/\s+\(/g, "(");
+		console.log("remove space b4 (: "+line);
+		//remove whitespace in expressions
+		//parser.ops = {"!":"not", "|":"or", "&":"and", "<":"less_than", ">":"greater_than", "==":"equals", "=":"assign", "+": "add", "-":"sub", "*":"mult", "/":"div", "%":"mod"};
+		line = line.replace(/\s*([%!/|&<>/*/+-//=]+)\s*/g, "$1");
+		console.log("remove space in expressions: "+line);
+		//tag strings
 		line = line.replace(/"(.*)?"/, "^$1");
+		console.log("tag strings "+line);
+		//split on whitespace
 		line = line.split(/\s/);
+		console.log("split: "+line);
+		console.log("");
 		return line;
 	},
 	
@@ -203,7 +221,7 @@ var parser =
 		{
 			if (line[i]=="(") {parenthesis++; newstr+=line[i];}
 			else if (line[i]==")") {parenthesis--; newstr+=line[i];}
-			else if (line[i]==" " && parenthesis!==0);
+			else if (line[i]==" " && parenthesis!=0);
 			else newstr+=line[i];
 		}
 		return newstr;
