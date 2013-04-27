@@ -188,8 +188,17 @@ var parser =
 		console.log("initial: "+line);
 		line = line.trim();
 		console.log("trim: "+line);
-		line = parser.remParSpace(line);
-		console.log("remove spaces inside (): "+line);
+		if (line.indexOf('"')==-1)
+		{
+			line = parser.remParSpace(line);
+			console.log("remove spaces inside (): "+line);
+		}
+		else
+		{
+			var usrStr = /"(.*)"/.exec(line)[1];
+			line = line.replace(/".*"/, "~~~");
+			console.log(usrStr);
+		}
 		//remove comments
 		line = line.replace(/#+.*/g, "");
 		console.log("remove comments: "+line);
@@ -200,15 +209,19 @@ var parser =
 		line = line.replace(/\s+\(/g, "(");
 		console.log("remove space b4 (: "+line);
 		//remove whitespace in expressions
-		//parser.ops = {"!":"not", "|":"or", "&":"and", "<":"less_than", ">":"greater_than", "==":"equals", "=":"assign", "+": "add", "-":"sub", "*":"mult", "/":"div", "%":"mod"};
 		line = line.replace(/\s*([%!/|&<>/*/+-//=]+)\s*/g, "$1");
 		console.log("remove space in expressions: "+line);
-		//tag strings
-		line = line.replace(/"(.*)?"/, "^$1");
-		console.log("tag strings "+line);
 		//split on whitespace
 		line = line.split(/\s/);
 		console.log("split: "+line);
+		if (typeof usrStr !== "undefined")
+		{
+			for (var i=0; i<line.length; i++)
+			{
+				line[i] = line[i].replace(/~~~/, '"^'+usrStr+'"');
+			}
+			console.log("substituted string: "+line);
+		}
 		console.log("");
 		return line;
 	},
