@@ -169,7 +169,6 @@
             <div class="span12 box bordered">
               <strong>Key</strong> 
               <br/><span class="code function">* : </span>argument
-              <br/><span class="code function">[] : </span>optional params
             </div>
           </div>
           <div class="row-fluid divider-small">
@@ -184,16 +183,22 @@
           </div>
           <div class="row-fluid divider-small">
             <div class="span12 box bordered">
-              <strong>Control Flow</strong> 
-              <br/>conditionals<br/><span class="code function">
-                if *condition do<br/>
-                &nbsp;&nbsp;block<br/>
-                end
-              </span>
-              <br/><span class="code function">*a - *b : </span>minus
-              <br/><span class="code function">*a / *b : </span>divide
-              <br/><span class="code function">*a * *b : </span>multiply
-              <br/><span class="code function">*a % *b : </span>mod
+              <strong>Robot Functions</strong> 
+              <br/><span class="code function">fd(*distanceCM)</span> 
+              <br/><span class="code function">forward(*distanceCM)</span> 
+              <br/><span class="code function">bd(*distanceCM)</span> 
+              <br/><span class="code function">backward(*distanceCM)</span> 
+              <br/><span class="code function">lt(*angle)</span> 
+              <br/><span class="code function">left(*angle)</span> 
+              <br/><span class="code function">rt(*angle)</span> 
+              <br/><span class="code function">right(*angle)</span> 
+              <br/><span class="code function">MotorA(*milliseconds, *power)</span> 
+              <br/><span class="code function">MotorB(*milliseconds, *power)</span> 
+              <br/><span class="code function">MotorC(*milliseconds, *power)</span> 
+              <br/><span class="code function">MotorAB(*milliseconds, *powerA, *powerB)</span> 
+              <br/><span class="code function">MotorAC(*milliseconds, *powerA, *powerC)</span> 
+              <br/><span class="code function">MotorBC(*milliseconds, *powerB, *powerC)</span> 
+              <br/><span class="code function">MotorABC(*milliseconds, *powerA, *powerB, *powerC)</span> 
             </div>
           </div>
         </div>
@@ -205,6 +210,35 @@
               <br/><span class="code function">*a &#60; *b : </span>lesser than
               <br/><span class="code function">*a == *b : </span>equals
               <br/><span class="code function">not *a : </span>negation
+            </div>
+          </div>
+          <div class="row-fluid divider-small">
+            <div class="span12 box bordered">
+              <strong>Control Flow</strong> 
+              <br/>Delay<br/><span class="code function">delay(*milliseconds)</span><br/>
+              <br/>Background Thread<br/><span class="code function">
+                define background() do<br/>
+                &emsp;block<br/>
+                end
+              </span><br/>
+              <br/>Conditionals<br/><span class="code function">
+                if *condition do<br/>
+                &emsp;block<br/>
+                end
+              </span><br/>
+              <br/>Loops<br/><span class="code function">
+                while *condition do<br/>
+                &emsp;block<br/>
+                end
+              </span><br/>
+              <br/>Defining Functions<br/><span class="code function">
+                define functionName(*param) do<br/>
+                &emsp;block<br/>
+                end
+              </span><br/>
+              <br/>Calling Function<br/><span class="code function">
+                functionName(*a)
+              </span>
             </div>
           </div>
         </div>
