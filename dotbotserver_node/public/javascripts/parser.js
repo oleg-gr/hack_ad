@@ -2,6 +2,8 @@ var parser =
 {
 	parse: function(doc, callback)
 	{
+		parser.ops = {"!":"not", "|":"or", "&":"and", "<":"less_than", ">":"greater_than", "==":"equals", "=":"assign", "+": "add", "-":"sub", "*":"mult", "/":"div", "%":"mod"};
+		parser.block_switch = {"define":1, "while":2, "if":3};
 		parser.json = {};
 		parser.code = [];
 		doc.eachLine(function(line)
@@ -36,34 +38,54 @@ var parser =
 	buildJSON: function(code)
 	{
 		var temp_code = [];
-		parser.ops = {"!":"not", "|":"or", "&":"and", "<":"less_than", ">":"greater_than", "==":"equals", "=":"assign", "+": "add", "-":"sub", "*":"mult", "/":"div", "%":"mod"};
+		lineloop:
 		for (var i = 0; i<code.length; i++)
 		{
 			for (var j = 0; j<code[i].length; j++)
 			{
-				var block_switch = {"define":1, "while":2, "if":3};
-				if (block_switch.hasOwnProperty(code[i][j]))
+				
+				if (parser.block_switch.hasOwnProperty(code[i][j]))
 				{
-					var loop_type = block_switch[code[i][j]];
-					var pf = parser.parseFunction(code[i][++j]);
-					var block = [];
-					i++;
-					while (code[i][0] != "end")
-					{
-						block.push(code[i++]);
-					}
-					for (var key in pf)
-					{
-						if(loop_type==1) parser.defs[key]={"args": pf[key], "code":parser.buildJSON(block)};
-						else if (loop_type==2) temp_code.push({"while":{"condition": pf, "code":parser.buildJSON(block)}});
-						else if (loop_type==3) temp_code.push({"if":{"condition": pf, "code":parser.buildJSON(block)}});
-					}
+					var tmpBlock = parser.parseCtrlFlow(code, i, j);
+					i = tmpBlock[1];
+					if (tmpBlock[0] !== null) temp_code.push(tmpBlock[0]);
+					continue lineloop;
+					
 				}
 				else temp_code.push(parser.parseFunction(code[i][j]));
 			}
 		}
 		return temp_code;
 					
+	},
+	
+	parseCtrlFlow: function(code, i)
+	{
+		var loop_type = parser.block_switch[code[i][0]];
+		var pf = parser.parseFunction(code[i++][1]);
+		var block = [];
+		while (code[i][0] != "end")
+		{
+			if(code[i][code[i].length-1].toLowerCase() == "do")
+			{
+				var tmpBlock = parser.parseCtrlFlow(code,i);
+				block.push(tmpBlock[0]);
+				i=tmpBlock[1];
+				i++;
+			}
+			else 
+			{
+				block.push(parser.buildJSON([code[i]])[0]);
+				i++;
+			}
+		}
+		
+		for (var key in pf)
+		{
+			if(loop_type==1) {parser.defs[key]={"args": pf[key], "code":block}; return [null,i];}
+			else if (loop_type==2) {return [{"while":{"condition": pf, "code":block}}, i];}
+			else if (loop_type==3) {return [{"if":{"condition": pf, "code":block}},i];}
+		}
 	},
 	
 	parseFunction: function(code)
@@ -185,44 +207,33 @@ var parser =
 	
 	format: function(line)
 	{
-		console.log("initial: "+line);
 		line = line.trim();
-		console.log("trim: "+line);
 		if (line.indexOf('"')==-1)
 		{
 			line = parser.remParSpace(line);
-			console.log("remove spaces inside (): "+line);
 		}
 		else
 		{
 			var usrStr = /"(.*)"/.exec(line)[1];
 			line = line.replace(/".*"/, "~~~");
-			console.log(usrStr);
 		}
 		//remove comments
 		line = line.replace(/#+.*/g, "");
-		console.log("remove comments: "+line);
 		//remove double spaces
 		line = line.replace(/\s+/g, " ");
-		console.log("remove x2 spaces: "+line);
 		//remove spaces before parentheses
 		line = line.replace(/\s+\(/g, "(");
-		console.log("remove space b4 (: "+line);
 		//remove whitespace in expressions
 		line = line.replace(/\s*([%!/|&<>/*/+-//=]+)\s*/g, "$1");
-		console.log("remove space in expressions: "+line);
 		//split on whitespace
 		line = line.split(/\s/);
-		console.log("split: "+line);
 		if (typeof usrStr !== "undefined")
 		{
 			for (var i=0; i<line.length; i++)
 			{
 				line[i] = line[i].replace(/~~~/, '"^'+usrStr+'"');
 			}
-			console.log("substituted string: "+line);
 		}
-		console.log("");
 		return line;
 	},
 	
