@@ -1,5 +1,6 @@
 package com.example.nxtdriver;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -28,6 +29,7 @@ public class MainActivity extends Activity{
 	NumberPicker idpicker;
 
 
+	@SuppressLint("CutPasteId")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 

@@ -124,7 +124,9 @@ public class Compiler {
 
 		} else if (name.equals("return")) { return ((String) lookup((String) function.get("arg0")));
 
-		} else{ 
+		} else if (name.equals("delay")) { delay(String.valueOf(Integer.parseInt(lookup(((String)function.get("arg0"))))*1000));
+
+		} else { 
 			if (this.definitions.has(name)) {
 				//put all arguments into an array
 				JSONObject definedfunction = this.definitions.getJSONObject(name);
@@ -232,6 +234,11 @@ public class Compiler {
 	private  String mod(String x, String y) 
 	{
 		return Integer.toString(Integer.parseInt(lookup(x)) % Integer.parseInt(lookup(y)));
+	}
+	
+	private void delay(String x) 
+	{
+	    t.change_motor(new boolean[] {true, true, true}, new byte[] {0,0,0}, Integer.parseInt(lookup(x)));
 	}
 
 	private  String print(String x) 
