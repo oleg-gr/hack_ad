@@ -33,3 +33,45 @@ java.lang.NullPointerException
 	at org.eclipse.jdt.internal.ui.text.java.hover.BestMatchHover.getHoverInfo2(BestMatchHover.java:129)
 	at org.eclipse.jdt.internal.ui.text.java.hover.JavaEditorTextHoverProxy.getHoverInfo2(JavaEditorTextHoverProxy.java:85)
 	at org.eclipse.jface.text.TextViewerHoverManager$4.run(TextViewerHoverManager.java:166)
+!SESSION 2013-04-29 20:56:44.612 -----------------------------------------------
+eclipse.buildId=I20120502-2000
+java.version=1.7.0_21
+java.vendor=Oracle Corporation
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_US
+Command-line arguments:  -data /home/oleg/Documents/hack_ad/nxtdriver_android -os linux -ws gtk -arch x86_64
+
+!ENTRY org.eclipse.equinox.p2.operations 4 0 2013-04-29 22:44:00.771
+!MESSAGE Operation details
+!SUBENTRY 1 org.eclipse.equinox.p2.director 4 1 2013-04-29 22:44:00.771
+!MESSAGE Cannot complete the install because one or more required items could not be found.
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2013-04-29 22:44:00.771
+!MESSAGE Software being installed: Android Development Tools 21.1.0.v201302060044-569685 (com.android.ide.eclipse.adt.feature.group 21.1.0.v201302060044-569685)
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2013-04-29 22:44:00.771
+!MESSAGE Missing requirement: Android Development Tools 21.1.0.v201302060044-569685 (com.android.ide.eclipse.adt.feature.group 21.1.0.v201302060044-569685) requires 'org.eclipse.wst.sse.core 0.0.0' but it could not be found
+
+!ENTRY org.eclipse.equinox.p2.operations 4 0 2013-04-29 22:44:00.795
+!MESSAGE Operation details
+!SUBENTRY 1 org.eclipse.equinox.p2.director 4 1 2013-04-29 22:44:00.795
+!MESSAGE Cannot complete the install because one or more required items could not be found.
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2013-04-29 22:44:00.795
+!MESSAGE Software being installed: Android Development Tools 21.1.0.v201302060044-569685 (com.android.ide.eclipse.adt.feature.group 21.1.0.v201302060044-569685)
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2013-04-29 22:44:00.795
+!MESSAGE Missing requirement: Android Development Tools 21.1.0.v201302060044-569685 (com.android.ide.eclipse.adt.feature.group 21.1.0.v201302060044-569685) requires 'org.eclipse.wst.sse.core 0.0.0' but it could not be found
+
+!ENTRY org.eclipse.equinox.p2.operations 4 0 2013-04-29 22:44:44.660
+!MESSAGE Operation details
+!SUBENTRY 1 org.eclipse.equinox.p2.director 4 1 2013-04-29 22:44:44.661
+!MESSAGE Cannot complete the install because one or more required items could not be found.
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2013-04-29 22:44:44.661
+!MESSAGE Software being installed: Android Development Tools 21.1.0.v201302060044-569685 (com.android.ide.eclipse.adt.feature.group 21.1.0.v201302060044-569685)
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2013-04-29 22:44:44.661
+!MESSAGE Missing requirement: Android Development Tools 21.1.0.v201302060044-569685 (com.android.ide.eclipse.adt.feature.group 21.1.0.v201302060044-569685) requires 'org.eclipse.wst.sse.core 0.0.0' but it could not be found
+
+!ENTRY org.eclipse.equinox.p2.operations 4 0 2013-04-29 22:44:44.664
+!MESSAGE Operation details
+!SUBENTRY 1 org.eclipse.equinox.p2.director 4 1 2013-04-29 22:44:44.664
+!MESSAGE Cannot complete the install because one or more required items could not be found.
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2013-04-29 22:44:44.664
+!MESSAGE Software being installed: Android Development Tools 21.1.0.v201302060044-569685 (com.android.ide.eclipse.adt.feature.group 21.1.0.v201302060044-569685)
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2013-04-29 22:44:44.664
+!MESSAGE Missing requirement: Android Development Tools 21.1.0.v201302060044-569685 (com.android.ide.eclipse.adt.feature.group 21.1.0.v201302060044-569685) requires 'org.eclipse.wst.sse.core 0.0.0' but it could not be found

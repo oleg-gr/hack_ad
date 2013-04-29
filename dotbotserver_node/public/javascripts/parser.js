@@ -31,8 +31,8 @@ var parser =
     }
     if (parsed_line[0] != [""]) code.push(parsed_line);
     var main = parser.buildJSON(code);
-		var superJSON = {"state":"override", "main": main};
-		if (typeof callback === 'function') callback(superJSON);
+	var superJSON = {"state":"override", "main": main};
+	if (typeof callback === 'function') callback(superJSON);
   },
 	
 	buildJSON: function(code)
@@ -42,8 +42,7 @@ var parser =
 		for (var i = 0; i<code.length; i++)
 		{
 			for (var j = 0; j<code[i].length; j++)
-			{
-				
+			{	
 				if (parser.block_switch.hasOwnProperty(code[i][j]))
 				{
 					var tmpBlock = parser.parseCtrlFlow(code, i, j);
@@ -52,6 +51,7 @@ var parser =
 					continue lineloop;
 					
 				}
+				
 				else temp_code.push(parser.parseFunction(code[i][j]));
 			}
 		}
@@ -79,7 +79,6 @@ var parser =
 				i++;
 			}
 		}
-		
 		for (var key in pf)
 		{
 			if(loop_type==1) {parser.defs[key]={"args": pf[key], "code":block}; return [null,i];}
@@ -95,13 +94,15 @@ var parser =
 		if (split_ex.length != 1)
 		{
 			split_ex = parser.convertExpression(split_ex);
-		}	
-		else split_ex = split_ex[0];
+		}
+		
+		else {
+		split_ex = split_ex[0];}
 		var matched = split_ex.match(/(.*?)\((.*)\)/);
 		if (matched !== null)
 		{
 			var args = parser.splitStatement(matched[2], {",":","});
-			pf[matched[1]]={};
+			pf[matched[1]]={"arg0":"null"};
 			for (var i = 0; i<args.length; i+=2)
 			{
 				pf[matched[1]]["arg"+(i/2)] = parser.parseFunction(args[i]);

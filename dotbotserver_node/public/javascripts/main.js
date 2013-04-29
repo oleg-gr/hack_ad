@@ -14,8 +14,7 @@ var printConsole = function(text){
 };
 
 var postObject = function(obj, callback){
-  var val = $.post("http://discos.herokuapp.com/io", obj, printConsole(JSON.stringify(obj, null, 4)), 'json');
-  if (typeof callback === 'function') callback(val);
+  $.post("http://discos.herokuapp.com/io", obj, function(response){if (typeof callback === 'function') callback(response);}, 'json');
 };
 
 var getObject = function(id, callback){
@@ -28,7 +27,7 @@ var parseObject = function(json, callback){
 };
 
 var stdIn = function(str){
-  obj = null;
+  var obj = null;
   if (str == "start()"){
     obj = {state: "active", from: "master", id: activeId};
   } else if (str == "pause()"){
@@ -36,7 +35,7 @@ var stdIn = function(str){
   } else if (str == "stop()"){
     obj = {state: "inactive", from: "master", id: activeId};
   }
-  if (obj !== null){
+  if (obj != null){
     postObject(obj, function(resp){
       printConsole(obj);
     });
