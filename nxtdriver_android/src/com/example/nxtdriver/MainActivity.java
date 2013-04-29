@@ -49,6 +49,7 @@ public class MainActivity extends Activity{
     Compiler compiler;
     boolean sending = false;
     int id;
+    int nb;
     NumberPicker idpicker;
     String get;
 
@@ -64,6 +65,11 @@ public class MainActivity extends Activity{
 	background = Executors.newSingleThreadScheduledExecutor();
 	compile = Executors.newSingleThreadScheduledExecutor();
 	Button connectButton = (Button)findViewById(R.id.connect);
+	NumberPicker nbpicker = (NumberPicker)findViewById(R.id.idpicker);
+	nbpicker.setMaxValue(6);
+	nbpicker.setMinValue(1);
+	nbpicker.setWrapSelectorWheel(false);
+	//nb = nbpicker.getValue();
 	//Button readButton = (Button)findViewById(R.id.read);
 	status = (TextView)findViewById(R.id.status);
 	sensor = (TextView)findViewById(R.id.sensor);
