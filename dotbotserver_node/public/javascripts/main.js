@@ -40,14 +40,15 @@ var stdIn = function(str){
     postObject(obj, function(resp){
       printConsole(obj);
     });
+  } else {
+    $('#std-in').val('');
+    parseJSON(str, function(json){
+      json.from = 'master';
+      json.id = activeId;
+      console.log(json);
+      postObject(json);
+    });
   }
-  $('#std-in').val('');
-  parseJSON(str, function(json){
-    json.from = 'master';
-    json.id = activeId;
-    console.log(json);
-    postObject(json);
-  });
 };
 
 var parseJSON = function(string, callback){
