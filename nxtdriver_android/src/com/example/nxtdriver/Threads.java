@@ -47,7 +47,12 @@ public class Threads {
 			Log.v("nxtget", get);
 			Compiler compiler = new Compiler(code, Threads.this);
 			server.scheduleAtFixedRate(htmlclass, 0, 1, TimeUnit.SECONDS);
-			server.scheduleAtFixedRate(new postHTML(), 0, 1, TimeUnit.SECONDS);
+			try {
+			    server.scheduleAtFixedRate(new postHTML(), 0, 1, TimeUnit.SECONDS);
+			} catch (Exception e) {
+			    // TODO Auto-generated catch block
+			    e.printStackTrace();
+			}
 			compiler.compile();
 			change_motor(new boolean[] {true, true, true}, new byte[] {0,0,0}, 1);
 		}
@@ -55,10 +60,23 @@ public class Threads {
 
 	public class postHTML implements Runnable
 	{
-		postHTML()
-		{
-			
+	    	String customMsg = "";
+	    	
+		public postHTML() {
+		    this("");
 		}
+		
+		public postHTML(String msg) {
+		    
+		    try {
+			customMsg = "&msg="+ URLEncoder.encode(msg, "UTF-8");
+		    }
+		    catch (Exception e) {
+			Log.v("nxtdriver", e.getMessage());
+			customMsg = "&msg="+ msg;
+		    }
+		}
+		
 		public void run()
 		{
 			String urlParameters = null;
@@ -67,7 +85,7 @@ public class Threads {
 						"&id=" + URLEncoder.encode(String.valueOf(act.id), "UTF-8") +
 						"&status=" + URLEncoder.encode("ok", "UTF-8") +
 						"&sensors=" + URLEncoder.encode(String.valueOf(received[2]), "UTF-8") +
-						"&msg=" + URLEncoder.encode("ok", "UTF-8");
+						customMsg;
 			} catch (UnsupportedEncodingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

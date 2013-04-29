@@ -241,10 +241,9 @@ public class Compiler {
 	    t.change_motor(new boolean[] {true, true, true}, new byte[] {0,0,0}, Integer.parseInt(lookup(x)));
 	}
 
-	private  String print(String x) 
+	private void print(String x) 
 	{
-		System.out.println(lookup(x));
-		return "";
+	    	t.server.submit(t.new postHTML(String.valueOf(lookup(x))));
 	}
 
 	private  String greater(String x, String y) 
