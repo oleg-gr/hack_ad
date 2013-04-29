@@ -14,7 +14,6 @@ import android.view.View;
 
 import java.io.DataOutputStream;
 import java.io.InputStream;
-import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends Activity{
 
@@ -25,7 +24,7 @@ public class MainActivity extends Activity{
 	DataOutputStream mmOutputStream;
 	InputStream mmInputStream;
 	TextView sensor;
-	int id;
+	int id=1;
 	NumberPicker idpicker;
 
 
@@ -48,7 +47,6 @@ public class MainActivity extends Activity{
 			public void onValueChange(NumberPicker arg0, int arg1, int arg2) {
 				id = arg2;
 			}
-
 		});
 		
 		connectButton.setOnClickListener(new View.OnClickListener() {
@@ -60,7 +58,6 @@ public class MainActivity extends Activity{
 					connect.connectBT();
 					Threads threads = new Threads(MainActivity.this);
 					threads.compile.execute(threads.new dotbot());
-					threads.readNXT.scheduleAtFixedRate(threads.new read(), 0, 10, TimeUnit.MILLISECONDS);
 				} catch(Exception e) {
 					Log.v("nxtdriver", e.getMessage());
 				}
