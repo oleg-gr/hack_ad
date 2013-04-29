@@ -83,9 +83,9 @@ $(document).ready(function() {
 
   $('#plus').on('click', function(e){
     e.preventDefault();
-    avail = $('.rover-btn.btn-success:first');
+    avail = $('.rover-btn.btn-primary:first');
     if (avail.length > 0){
-      createTab(avail.attr('id').attr('id').split('-').pop());
+      createTab(avail.attr('id').split('-').pop());
     }
     return false;
   });
@@ -141,7 +141,7 @@ var createTab = function(id){
 };
 
 var deleteTab = function(id){
-  if (id !== 0){
+  if (id != "0"){
     $('#console-' + id).remove();
     $('#tab-' + id).remove();
     activeIds.splice(activeIds.indexOf(id),1);
