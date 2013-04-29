@@ -1,5 +1,6 @@
 package com.example.nxtdriver;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -25,10 +26,11 @@ public class MainActivity extends Activity{
 	DataOutputStream mmOutputStream;
 	InputStream mmInputStream;
 	TextView sensor;
-	int id;
+	int id = 1;
 	NumberPicker idpicker;
 
 
+	@SuppressLint("CutPasteId")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
@@ -48,6 +50,7 @@ public class MainActivity extends Activity{
 			public void onValueChange(NumberPicker arg0, int arg1, int arg2) {
 				id = arg2;
 			}
+		
 
 		});
 		

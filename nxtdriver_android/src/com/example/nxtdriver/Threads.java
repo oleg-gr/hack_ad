@@ -31,11 +31,11 @@ public class Threads {
 	Threads(MainActivity act)
 	{
 		this.act = act;
-		sendNXT = Executors.newScheduledThreadPool(1);
-		readNXT = Executors.newScheduledThreadPool(1);
-		server = Executors.newScheduledThreadPool(1);
-		background = Executors.newScheduledThreadPool(1);
-		compile = Executors.newScheduledThreadPool(1);
+		sendNXT = Executors.newSingleThreadScheduledExecutor();
+		readNXT = Executors.newSingleThreadScheduledExecutor();
+		server = Executors.newSingleThreadScheduledExecutor();
+		background = Executors.newSingleThreadScheduledExecutor();
+		compile = Executors.newSingleThreadScheduledExecutor();
 	}
 
 	public class dotbot implements Runnable{
