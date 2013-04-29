@@ -27,7 +27,7 @@ var parseObject = function(json, callback){
 };
 
 var stdIn = function(str){
-  obj = null;
+  var obj = null;
   if (str == "start()"){
     obj = {state: "active", from: "master", id: activeId};
   } else if (str == "pause()"){

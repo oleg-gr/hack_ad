@@ -31,8 +31,8 @@ var parser =
     }
     if (parsed_line[0] != [""]) code.push(parsed_line);
     var main = parser.buildJSON(code);
-		var superJSON = {"state":"override", "main": main};
-		if (typeof callback === 'function') callback(superJSON);
+	var superJSON = {"state":"override", "main": main};
+	if (typeof callback === 'function') callback(superJSON);
   },
 	
 	buildJSON: function(code)
