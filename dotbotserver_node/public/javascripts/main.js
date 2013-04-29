@@ -14,8 +14,7 @@ var printConsole = function(text){
 };
 
 var postObject = function(obj, callback){
-  var val = $.post("http://discos.herokuapp.com/io", obj, printConsole(JSON.stringify(obj, null, 4)), 'json');
-  if (typeof callback === 'function') callback(val);
+  $.post("http://discos.herokuapp.com/io", obj, function(response){if (typeof callback === 'function') callback(response);}, 'json');
 };
 
 var getObject = function(id, callback){
@@ -28,7 +27,7 @@ var parseObject = function(json, callback){
 };
 
 var stdIn = function(str){
-  obj = null;
+  var obj = null;
   if (str == "start()"){
     obj = {state: "active", from: "master", id: activeId};
   } else if (str == "pause()"){
@@ -36,18 +35,19 @@ var stdIn = function(str){
   } else if (str == "stop()"){
     obj = {state: "inactive", from: "master", id: activeId};
   }
-  if (obj !== null){
+  if (obj != null){
     postObject(obj, function(resp){
       printConsole(obj);
     });
+  } else {
+    $('#std-in').val('');
+    parseJSON(str, function(json){
+      json.from = 'master';
+      json.id = activeId;
+      console.log(json);
+      postObject(json);
+    });
   }
-  $('#std-in').val('');
-  parseJSON(str, function(json){
-    json.from = 'master';
-    json.id = activeId;
-    console.log(json);
-    postObject(json);
-  });
 };
 
 var parseJSON = function(string, callback){
@@ -80,6 +80,14 @@ $(document).ready(function() {
     }
   });
 
+  $('#plus').on('click', function(e){
+    e.preventDefault();
+    avail = $('.rover-btn.btn-primary:first');
+    if (avail.length > 0){
+      createTab(avail.attr('id').split('-').pop());
+    }
+    return false;
+  });
   $('#rover-row').on('click', '.rover-btn.disabled', function(e){
     e.preventDefault();
   });
@@ -132,18 +140,20 @@ var createTab = function(id){
 };
 
 var deleteTab = function(id){
-  $('#console-' + id).remove();
-  $('#tab-' + id).remove();
-  activeIds.splice(activeIds.indexOf(id),1);
-  if ($('#tabs li').length == 2){
-    $('#console-0').show();
-    $('#tab-0').addClass('active').show();
-    switchTab("0");
-  } else{
-    switchTab($('#tabs li').eq(1).attr('id').split('-').pop());
+  if (id != "0"){
+    $('#console-' + id).remove();
+    $('#tab-' + id).remove();
+    activeIds.splice(activeIds.indexOf(id),1);
+    if ($('#tabs li').length == 2){
+      $('#console-0').show();
+      $('#tab-0').addClass('active').show();
+      switchTab("0");
+    } else{
+      switchTab($('#tabs li').eq(1).attr('id').split('-').pop());
+    }
+    $('#rover-' + id).toggleClass("btn-success btn-primary");
+    $('#rover-' + id + ' span').html("Ready");
   }
-  $('#rover-' + id).toggleClass("btn-success btn-primary");
-  $('#rover-' + id + ' span').html("Ready");
 };
 
 $(function () {

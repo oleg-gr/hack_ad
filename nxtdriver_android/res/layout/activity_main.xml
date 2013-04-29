@@ -41,21 +41,21 @@
         android:layout_below="@+id/stop"
         android:text="Sensor" />
 
-    <NumberPicker
-        android:id="@+id/idpicker"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/connect" />
-
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/connect"
         android:layout_alignBottom="@+id/connect"
-        android:layout_toLeftOf="@+id/numberPicker1"
-        android:text="ID: "
+        android:layout_centerHorizontal="true"
+        android:text="ID:"
         android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <NumberPicker
+        android:id="@+id/idpicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/textView1"
+        android:layout_marginLeft="30dp"
+        android:layout_toRightOf="@+id/textView1" />
 
 </RelativeLayout>
