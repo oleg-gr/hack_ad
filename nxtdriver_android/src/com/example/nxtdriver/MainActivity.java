@@ -221,13 +221,6 @@ public class MainActivity extends Activity{
 		rd.close();
 
 	    } catch (Exception e) {
-	    } else if (name.equals("motorC")) { motorC((String) function.get("arg0"),(String) function.get("arg1"));
-
-	    } else if (name.equals("motorAB")) { motorAB((String) function.get("arg0"),(String) function.get("arg1"), (String) function.get("arg2"));
-
-	    } else if (name.equals("motorAC")) { motorAC((String) function.get("arg0"),(String) function.get("arg1"), (String) function.get("arg2"));
-
-	    } else if (name.equals("motorBC")) { motorBC((String) functio
 
 		e.printStackTrace();
 
