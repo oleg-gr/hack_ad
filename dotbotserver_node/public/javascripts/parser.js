@@ -63,6 +63,7 @@ var parser =
 	{
 		var loop_type = parser.block_switch[code[i][0]];
 		var pf = parser.parseFunction(code[i++][1]);
+		//console.log(pf);
 		var block = [];
 		while (code[i][0] != "end")
 		{
@@ -80,8 +81,12 @@ var parser =
 			}
 		}
 		
+		
+		//console.log(pf);
 		for (var key in pf)
 		{
+			//console.log(key);
+			//console.log(loop_type);
 			if(loop_type==1) {parser.defs[key]={"args": pf[key], "code":block}; return [null,i];}
 			else if (loop_type==2) {return [{"while":{"condition": pf, "code":block}}, i];}
 			else if (loop_type==3) {return [{"if":{"condition": pf, "code":block}},i];}
@@ -90,26 +95,50 @@ var parser =
 	
 	parseFunction: function(code)
 	{
+		//console.log("parsefunction code");
+		//console.log(code);
 		var pf = {};
 		var split_ex = parser.splitStatement(code, parser.ops);
+		//console.log("splitstatement");
+		//console.log(split_ex);
 		if (split_ex.length != 1)
 		{
 			split_ex = parser.convertExpression(split_ex);
-		}	
-		else split_ex = split_ex[0];
+			//console.log("long");
+		}
+		
+		else {//console.log("short");
+		split_ex = split_ex[0];}
+		//console.log("split_ex");
+		//console.log(split_ex);
 		var matched = split_ex.match(/(.*?)\((.*)\)/);
+		//console.log("mathced");
+		//console.log(matched);
 		if (matched !== null)
 		{
 			var args = parser.splitStatement(matched[2], {",":","});
-			pf[matched[1]]={};
+			//console.log("args");
+			//console.log(args);
+			pf[matched[1]]={"arg0":"null"};
 			for (var i = 0; i<args.length; i+=2)
 			{
+				//console.log("args[i]: "+i);
+				//console.log(args[i]);
+				//console.log(pf);
 				pf[matched[1]]["arg"+(i/2)] = parser.parseFunction(args[i]);
+				//console.log("pf");
+				//console.log(pf);
 			}
+			//console.log("return");
+			//console.log(pf);
+			//console.log("");
 			return pf;
 		}
 		else
 		{
+			//console.log("return");
+			//console.log(code);
+			//console.log("");
 			return code;
 		}
 		
