@@ -2,9 +2,7 @@ package com.example.nxtdriver;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -22,7 +20,9 @@ public class Threads {
 	ScheduledExecutorService server;
 	ScheduledExecutorService background;
 	ScheduledExecutorService compile;
+	ScheduledExecutorService override;
 	String get;
+	String code;
 	Compiler compiler;
 	byte[][] motors = new byte[2][3];
 	byte[] received = new byte[3];
@@ -31,21 +31,20 @@ public class Threads {
 	Threads(MainActivity act)
 	{
 		this.act = act;
-		sendNXT = Executors.newSingleThreadScheduledExecutor();
-		readNXT = Executors.newSingleThreadScheduledExecutor();
-		server = Executors.newSingleThreadScheduledExecutor();
-		background = Executors.newSingleThreadScheduledExecutor();
-		compile = Executors.newSingleThreadScheduledExecutor();
+		sendNXT = Executors.newScheduledThreadPool(1);
+		readNXT = Executors.newScheduledThreadPool(1);
+		server = Executors.newScheduledThreadPool(1);
+		background = Executors.newScheduledThreadPool(1);
+		compile = Executors.newScheduledThreadPool(1);
+		override = Executors.newScheduledThreadPool(1);
 	}
 
 	public class dotbot implements Runnable{
 		public void run(){
 			getHTML htmlclass = new getHTML();
-			Log.v("nxtget", "starting get");
-			htmlclass.run();
-			String code = get;
-			Log.v("nxtget", get);
-			Compiler compiler = new Compiler(code, Threads.this);
+			read read = new read();
+			postHTML post = new postHTML();			
+			readNXT.scheduleAtFixedRate(read, 0, 10, TimeUnit.MILLISECONDS);
 			server.scheduleAtFixedRate(htmlclass, 0, 1, TimeUnit.SECONDS);
 			try {
 			    server.scheduleAtFixedRate(new postHTML(), 0, 1, TimeUnit.SECONDS);
@@ -61,7 +60,12 @@ public class Threads {
 	public class postHTML implements Runnable
 	{
 	    	String customMsg = "";
-	    	
+		URL url;
+		HttpURLConnection connection = null;
+		String urlParameters = null;
+		String line;
+		StringBuffer response = new StringBuffer(); 
+		
 		public postHTML() {
 		    this("");
 		}
@@ -75,93 +79,79 @@ public class Threads {
 			Log.v("nxtdriver", e.getMessage());
 			customMsg = "&msg="+ msg;
 		    }
+
 		}
 		
 		public void run()
 		{
-			String urlParameters = null;
 			try {
 				urlParameters = "from=" + URLEncoder.encode("slave", "UTF-8") +
 						"&id=" + URLEncoder.encode(String.valueOf(act.id), "UTF-8") +
 						"&status=" + URLEncoder.encode("ok", "UTF-8") +
 						"&sensors=" + URLEncoder.encode(String.valueOf(received[2]), "UTF-8") +
+
 						customMsg;
-			} catch (UnsupportedEncodingException e1) {
+			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			URL url;
-			HttpURLConnection connection = null;  
 			try {
 				//Create connection
-				url = new URL("http://discos.herokuapp.com/io");
 				connection = (HttpURLConnection)url.openConnection();
 				connection.setRequestMethod("POST");
-				connection.setRequestProperty("Content-Type", 
-						"application/x-www-form-urlencoded");
-
-				connection.setRequestProperty("Content-Length", "" + 
-						Integer.toString(urlParameters.getBytes().length));
+				connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+				connection.setRequestProperty("Content-Length", "" + Integer.toString(urlParameters.getBytes().length));
 				connection.setRequestProperty("Content-Language", "en-US");  
-
 				connection.setUseCaches (false);
 				connection.setDoInput(true);
 				connection.setDoOutput(true);
 
 				//Send request
-				DataOutputStream wr = new DataOutputStream (
-						connection.getOutputStream ());
+				DataOutputStream wr = new DataOutputStream (connection.getOutputStream ());
 				wr.writeBytes (urlParameters);
 				wr.flush ();
 				wr.close ();
 
-				//Get Response	
-				InputStream is = connection.getInputStream();
-				BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-				String line;
-				StringBuffer response = new StringBuffer(); 
-				while((line = rd.readLine()) != null) {
+				//Get Response
+				BufferedReader rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+				while((line = rd.readLine()) != null)
+				{
 					response.append(line);
 					response.append('\r');
 				}
 				rd.close();
-
 			} catch (Exception e) {
-
-				e.printStackTrace();
-
+				Log.v("nxtdriver", "error in postHTML run: "+e.getMessage());
 			} finally {
-
 				if(connection != null) {
 					connection.disconnect(); 
 				}
 			}
 		}	
 	}
-	
+
 	public class read implements Runnable{
 		public void run(){
 			try {
-
-				if (act.mmInputStream.available()>0){
+				if (act.mmInputStream.available()>0)
+				{
 					act.mmInputStream.read(received);
-					Log.v("nxtdriverread", "distance: "+String.valueOf(received[2]));}
+					Log.v("nxtdriverread", "distance: "+String.valueOf(received[2]));
+				}
 			} catch (Exception e) {
-				String error = e.getMessage();
-				Log.v("nxtdriverread", error);
+				Log.v("nxtdriver", "error in read run: "+e.getMessage());
 			}
 		}
 	}
-	
+
 	public class send implements Runnable{
 		public void run()
 		{
-			try {
+			try 
+			{
 				act.mmOutputStream.write(motors[0]);
-				Log.v("nxtdriversend", "size: "+act.mmOutputStream.size());
-				Log.v("nxtdriversend",String.valueOf(motors[0][0])+ " "+String.valueOf(motors[0][1])+ " "+String.valueOf(motors[0][2]));
 			} catch (Exception e) {
-				Log.v("nxtdriversend",e.getMessage());
+				Log.v("nxtdriver","error in send run: "+e.getMessage());
 			}
 		}
 	}
@@ -178,10 +168,8 @@ public class Threads {
 				conn = (HttpURLConnection) url.openConnection();
 				conn.setRequestMethod("GET");
 				rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				Log.v("nxtget", "error is: "+ e.getMessage());
+				Log.v("nxtdriver", "error in getHTML init: "+ e.getMessage());
 			}
 		}
 
@@ -191,10 +179,34 @@ public class Threads {
 				while ((line = rd.readLine()) != null) {
 					get += line;
 				}
+				if(get.startsWith("active", 10)) compile.submit(new compileThread(code));
+				else if(get.startsWith("inactive", 10)) code = get;
+				else if(get.startsWith("paused", 10)) compile.wait();
+				else if(get.startsWith("override", 10))
+				{
+					compile.wait();
+					override.submit(new compileThread(get));
+				}
 			} catch (Exception e) {
-				Log.v("nxtget", "error in run: " + e.getMessage());
+				Log.v("nxtdriver", "error in getHTML run: " + e.getMessage());
 			}
 		}
+	}
+
+	public class compileThread implements Runnable{
+		String code;
+		Compiler compiler;
+		compileThread(String code)
+		{
+			this.code = code;
+		}
+		
+		@Override
+		public void run() {
+			compiler = new Compiler(code, Threads.this);
+			compiler.compile();
+		}
+
 	}
 
 	public void change_motor(boolean[] m, byte[] s, int d)
