@@ -185,28 +185,28 @@ public class Compiler {
 	}
 
 	private void motorA(String x, String y) {
-		t.change_motor(new boolean[] {true, false, false}, new byte[] {Byte.parseByte(lookup(x))}, Integer.parseInt(lookup(y)));
+		t.change_motor(new boolean[] {true, false, false}, new byte[] {Byte.parseByte(lookup(x)), 0, 0}, Integer.parseInt(lookup(y)));
 	}
 
 	private void motorB(String x, String y) {
-		t.change_motor(new boolean[] {false, true, false}, new byte[] {Byte.parseByte(lookup(x))}, Integer.parseInt(lookup(y)));
+		t.change_motor(new boolean[] {false, true, false}, new byte[] {Byte.parseByte(lookup(x)), 0, 0}, Integer.parseInt(lookup(y)));
 	}
 
 	private void motorC(String x, String y) {
-		t.change_motor(new boolean[] {false, false, true}, new byte[] {Byte.parseByte(lookup(x))}, Integer.parseInt(lookup(y)));
+		t.change_motor(new boolean[] {false, false, true}, new byte[] {Byte.parseByte(lookup(x)), 0, 0}, Integer.parseInt(lookup(y)));
 	}
 
 	private void motorAB(String x1, String x2, String y) {
 		Log.v("nxtcompiler", x1+" "+x2+" "+y);
-		t.change_motor(new boolean[] {true, true, false}, new byte[] {Byte.parseByte(lookup(x1)), Byte.parseByte(lookup(x2))}, Integer.parseInt(lookup(y)));
+		t.change_motor(new boolean[] {true, true, false}, new byte[] {Byte.parseByte(lookup(x1)), Byte.parseByte(lookup(x2)), 0}, Integer.parseInt(lookup(y)));
 	}
 
 	private void motorAC(String x1, String x2, String y) {
-		t.change_motor(new boolean[] {true, false, true}, new byte[] {Byte.parseByte(lookup(x1)), Byte.parseByte(lookup(x2))}, Integer.parseInt(lookup(y)));
+		t.change_motor(new boolean[] {true, false, true}, new byte[] {Byte.parseByte(lookup(x1)), Byte.parseByte(lookup(x2)), 0}, Integer.parseInt(lookup(y)));
 	}
 
 	private void motorBC(String x1, String x2, String y) {
-		t.change_motor(new boolean[] {false, true, true}, new byte[] {Byte.parseByte(lookup(x1)), Byte.parseByte(lookup(x2))}, Integer.parseInt(lookup(y)));
+		t.change_motor(new boolean[] {false, true, true}, new byte[] {Byte.parseByte(lookup(x1)), Byte.parseByte(lookup(x2)), 0}, Integer.parseInt(lookup(y)));
 	}
 
 	private void motorABC(String x1, String x2, String x3, String y) {

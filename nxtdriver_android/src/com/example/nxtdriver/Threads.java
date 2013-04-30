@@ -29,7 +29,8 @@ public class Threads {
 	byte[][] motors = new byte[2][3];
 	byte[] received = new byte[6];
 	boolean sending = false;
-
+	boolean stop = false;
+	
 	Threads(MainActivity act)
 	{
 		this.act = act;
@@ -49,9 +50,9 @@ public class Threads {
 			read read = new read();		
 			//stateCheck statet = new stateCheck();
 			readNXT.scheduleAtFixedRate(read, 0, 10, TimeUnit.MILLISECONDS);
-			sendserver.scheduleAtFixedRate(new getHTML(), 0, 1, TimeUnit.SECONDS);
-			getserver.scheduleAtFixedRate(new postHTML(true), 0, 1, TimeUnit.SECONDS);
-			getserver.scheduleAtFixedRate(new postHTML(false), 0, 1, TimeUnit.SECONDS);
+			getserver.scheduleAtFixedRate(new getHTML(), 0, 500, TimeUnit.MILLISECONDS);
+			sendserver.scheduleAtFixedRate(new postHTML(true), 0, 1, TimeUnit.SECONDS);
+			sendserver.scheduleAtFixedRate(new postHTML(false), 0, 1, TimeUnit.SECONDS);
 			state.scheduleAtFixedRate(new stateCheck(), 0, 100, TimeUnit.MILLISECONDS);
 			//change_motor(new boolean[] {true, true, true}, new byte[] {0,0,0}, 1);
 		}
@@ -185,7 +186,7 @@ public class Threads {
 				while ((line = rd.readLine()) != null) {
 					get += line;
 				}
-				Log.v("nxtdrivergetmsg", get);
+				//Log.v("nxtdrivergetmsg", get);
 
 				rd.close();
 			} catch (Exception e) {
@@ -205,6 +206,9 @@ public class Threads {
 			this.code = code;
 			compiler = new Compiler(code, Threads.this);
 		}
+		public void stop(){
+			compiler = null;
+		}
 
 		@Override
 		public void run() {
@@ -214,35 +218,49 @@ public class Threads {
 
 	public class stateCheck implements Runnable{
 		boolean wait = false;
+		boolean first = true;
+		
 
 		public void run(){
-			Log.v("statetag", "running state");
+			try{
+			//Log.v("statetag", "running state");
 			if(get.startsWith("active", 10) && cpt != null) 
 			{
+				Log.v("statetag", "active");
 				wait = false;
-				compile.submit(cpt);
+				if(first) {first = false;compile = Executors.newScheduledThreadPool(1);compile.submit(cpt);}
+				//else compile.shutdownNow();
+				
+				//else compile.notify();
 			}
 			else if(get.startsWith("active", 10) && cpt == null); //some sort of error?
 			else if(get.startsWith("inactive", 10) && get.contains("main")) 
 			{
 				Log.v("statetag", "inactive");
 				change_motor(new boolean[] {true, true, true}, new byte[] {1,1,1}, 1);
+				if(!first) {compile.shutdownNow();stop=true;compile.awaitTermination(100, TimeUnit.SECONDS);
+				Log.v("statetag", "termintated"); first = true;change_motor(new boolean[] {true, true, true}, new byte[] {1,1,1}, 1);}
 				cpt = new compileThread(get);
 				wait = true;
 			}
 			else if(get.startsWith("inactive", 10) && !get.contains("main")) 
 			{
 				Log.v("statetag", "stopping");
+				change_motor(new boolean[] {true, true, true}, new byte[] {1,1,1}, 1);
 				compile.shutdownNow(); 
+				stop=true;
+				compile.awaitTermination(100, TimeUnit.SECONDS);
+				Log.v("statetag", "termintated");
 				change_motor(new boolean[] {true, true, true}, new byte[] {1,1,1}, 1);
 				cpt = null;
 				wait = true;
+				first = true;
 			}
 			else if(get.startsWith("paused", 10)) 
 			{
 				Log.v("statetag", "paused");
 				wait = true;
-
+					compile.wait();
 				change_motor(new boolean[] {true, true, true}, new byte[] {1,1,1}, 1);
 			}
 			else if(get.startsWith("override", 10))
@@ -250,43 +268,55 @@ public class Threads {
 				Log.v("statetag", "overriding");
 				wait = true;
 				change_motor(new boolean[] {true, true, true}, new byte[] {1,1,1}, 1);
+				compile.shutdownNow();
+				stop=true;
+				compile.awaitTermination(100, TimeUnit.SECONDS);
+				Log.v("statetag", "terminated");
+				change_motor(new boolean[] {true, true, true}, new byte[] {1,1,1}, 1);
 				override.submit(new compileThread(get));
 			}
-			if(wait)
+			/*if(wait)
+			{
 				try {
 					compile.wait();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					Log.v("statetage", e.getMessage());
-					
+
 				}
+			}*/
+			get = "";
+			}catch (Exception e){
+				Log.v("statetage", e.getMessage());
+			}
 		}
 	}
 
 	public void change_motor(boolean[] m, byte[] s, int d)
 	{
+		try{
 		Log.v("nxtdrivercompiler", "starting change motor");
-		Log.v("nxtdrivercompiler", String.valueOf(d));
+		Log.v("nxtdrivercompiler", String.valueOf(s[0])+" "+String.valueOf(s[1])+" "+String.valueOf(s[2]));
 		if(!sending)
 		{
-			Log.v("nxtdrivercompiler", "starting change motor");
-			Log.v("nxtdrivercompiler", String.valueOf(d));
-			if(!sending)
-			{
-				sendNXT.scheduleAtFixedRate(new send(), 0, 50, TimeUnit.MILLISECONDS);
-				sending = true;
-			}
+			sendNXT.scheduleAtFixedRate(new send(), 0, 50, TimeUnit.MILLISECONDS);
+			sending = true;
+		}
 
-			for (int i = 0; i<3; i++)
-			{
-				if(m[i]) motors[0][i] = s[i];
-				else motors[0][i] = 1;
-			}
-			try {
-				Thread.sleep(d);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+		for (int i = 0; i<3; i++)
+		{
+			if(m[i]) motors[0][i] = s[i];
+			else motors[0][i] = 1;
+		}
+		try {
+			while(d>0 && stop == false){
+			Thread.sleep(10);d-=10;}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		}catch (Exception e){
+			Log.v("nxtdrivercompiler", e.getMessage());
 		}
 	}
 }
+
