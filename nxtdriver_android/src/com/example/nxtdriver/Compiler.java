@@ -128,6 +128,14 @@ public class Compiler {
 
 		} else if (name.equals("delay")) { delay(String.valueOf(Integer.parseInt(lookup(((String)function.get("arg0"))))*1000));
 
+		} else if (name.equals("getSensorA")) { return String.valueOf(t.received[2]);
+
+		} else if (name.equals("getSensorB")) { return String.valueOf(t.received[3]);
+
+		} else if (name.equals("getSensorC")) { return String.valueOf(t.received[4]);
+
+		} else if (name.equals("getSensorD")) { return String.valueOf(t.received[5]);
+
 		} else { 
 			if (this.definitions.has(name)) {
 				//put all arguments into an array

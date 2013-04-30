@@ -26,7 +26,7 @@ public class Threads {
 	String code;
 	compileThread cpt;
 	byte[][] motors = new byte[2][3];
-	byte[] received = new byte[3];
+	byte[] received = new byte[6];
 	boolean sending = false;
 
 	Threads(MainActivity act)
@@ -82,9 +82,10 @@ public class Threads {
 			try {
 				urlParameters = "from=" + URLEncoder.encode("slave", "UTF-8") +
 						"&id=" + URLEncoder.encode(String.valueOf(act.id), "UTF-8") +
-						"&status=" + URLEncoder.encode("ok", "UTF-8") +
-						"&sensors=" + URLEncoder.encode(String.valueOf(received[2]), "UTF-8") +
-
+						"&sensors={\"SensorA\":\"" + URLEncoder.encode(String.valueOf(received[2]), "UTF-8") +
+						"\",\"SensorB\":\"" + URLEncoder.encode(String.valueOf(received[3]), "UTF-8") +
+						"\",\"SensorC\":\"" + URLEncoder.encode(String.valueOf(received[3]), "UTF-8") +
+						"\",\"SensorD\":\"" + URLEncoder.encode(String.valueOf(received[3]), "UTF-8") + "\"}" +
 						customMsg;
 				//Create connection
 				connection = (HttpURLConnection)url.openConnection();
