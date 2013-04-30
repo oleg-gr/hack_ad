@@ -91,11 +91,11 @@ public class Threads {
 		urlParameters = "from=" + URLEncoder.encode("slave", "UTF-8") +
 			"&id=" + URLEncoder.encode(String.valueOf(act.id), "UTF-8");
 		if (!handshake) {
-		    urlParameters += "&sensors=" + "[" +String.valueOf(received[2])  
-			    + "," + String.valueOf(received[3]) 
-			    + "," + String.valueOf(received[4])  
-			    + "," + String.valueOf(received[5])  
-			    + "]" +
+		    urlParameters += "&sensors=" + "[" +'"'+String.valueOf(received[2])  
+			    +'"'+","+'"' + String.valueOf(received[3]) 
+			    +'"'+","+'"' + String.valueOf(received[4])  
+			    +'"'+","+'"' + String.valueOf(received[5])  
+			    +'"'+"]" +
 			    customMsg;
 		    Log.v("params", urlParameters);
 		    postUrl = new URL("http://discos.herokuapp.com/io");
@@ -164,51 +164,53 @@ public class Threads {
 	}
     }
 
-    public class getHTML implements Runnable{
+	public class getHTML implements Runnable{
 
-	public void run() {
-	    try{
-		URL url = new URL("http://discos.herokuapp.com/io?from=slave&id="+String.valueOf(act.id));
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		conn.setRequestMethod("GET");
-		String line;
-		//Log.v("nxtdrivergethtml", "starting get");
-		get = "";
-		BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+		public void run() {
+			try{
+				URL url = new URL("http://discos.herokuapp.com/io?from=slave&id="+String.valueOf(act.id));
+				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+				conn.setRequestMethod("GET");
+				String line;
+				//Log.v("nxtdrivergethtml", "starting get");
+				get = "";
+				BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
-		while ((line = rd.readLine()) != null) {
-		    get += line;
+				while ((line = rd.readLine()) != null) {
+					get += line;
+				}
+				Log.v("nxtdrivergetmsg", get);
+				if(get.startsWith("active", 10) && cpt != null) compile.submit(cpt);
+				else if(get.startsWith("active", 10) && cpt == null); //some sort of error?
+				else if(get.startsWith("inactive", 10) && get.contains("main")) 
+				{
+					change_motor(new boolean[] {true, true, true}, new byte[] {1,1,1}, 1);
+					cpt = new compileThread(get);
+				}
+				else if(get.startsWith("inactive", 10) && !get.contains("main")) 
+				{
+					compile.shutdownNow(); 
+					change_motor(new boolean[] {true, true, true}, new byte[] {1,1,1}, 1);
+					cpt = null;
+				}
+				else if(get.startsWith("paused", 10)) 
+				{
+					change_motor(new boolean[] {true, true, true}, new byte[] {1,1,1}, 1);
+					compile.wait();
+				}
+				else if(get.startsWith("override", 10))
+				{
+					compile.wait();
+					change_motor(new boolean[] {true, true, true}, new byte[] {1,1,1}, 1);
+					override.submit(new compileThread(get));
+				}
+				else ;
+				rd.close();
+			} catch (Exception e) {
+				Log.v("nxtdrivergethtmlerror", e.getMessage());
+			}
 		}
-		Log.v("nxtdrivergetmsg", get);
-		if(get.startsWith("active", 10) && cpt != null) compile.submit(cpt);
-		else if(get.startsWith("active", 10) && cpt == null); //some sort of error?
-		else if(get.startsWith("inactive", 10) && get.contains("main")) 
-		{
-		    change_motor(new boolean[] {true, true, true}, new byte[] {0,0,0}, 1);
-		    cpt = new compileThread(get);
-		}
-		else if(get.startsWith("inactive", 10) && !get.contains("main")) 
-		{
-		    compile.shutdownNow(); 
-		    change_motor(new boolean[] {true, true, true}, new byte[] {0,0,0}, 1);
-		    cpt = null;
-		}
-		else if(get.startsWith("paused", 10)) 
-		{
-		    change_motor(new boolean[] {true, true, true}, new byte[] {0,0,0}, 1);
-		    compile.wait();
-		}
-		else if(get.startsWith("override", 10))
-		{
-		    compile.wait();
-		    override.submit(new compileThread(get));
-		}
-		else ;
-		rd.close();
-	    } catch (Exception e) {
-		Log.v("nxtdrivergethtmlerror", e.getMessage());
-	    }
-	}
+		
     }
 
     public class compileThread implements Runnable{
@@ -235,18 +237,24 @@ public class Threads {
 	Log.v("nxtdrivercompiler", String.valueOf(d));
 	if(!sending)
 	{
-	    sendNXT.scheduleAtFixedRate(new send(), 0, 500, TimeUnit.MILLISECONDS);
-	    sending = true;
-	}
+		Log.v("nxtdrivercompiler", "starting change motor");
+		Log.v("nxtdrivercompiler", String.valueOf(d));
+		if(!sending)
+		{
+			sendNXT.scheduleAtFixedRate(new send(), 0, 50, TimeUnit.MILLISECONDS);
+			sending = true;
+		}
 
-	for (int i = 0; i<m.length; i++)
-	{
-	    if(m[i]) motors[0][i] = s[i];
-	}
-	try {
-	    Thread.sleep(d);
-	} catch (InterruptedException e) {
-	    e.printStackTrace();
+		for (int i = 0; i<3; i++)
+		{
+			if(m[i]) motors[0][i] = s[i];
+			else motors[0][i] = 1;
+		}
+		try {
+			Thread.sleep(d);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
     }
 }
