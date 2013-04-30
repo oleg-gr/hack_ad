@@ -44,11 +44,11 @@ public class Threads {
 	public class dotbot implements Runnable{
 		public void run(){
 			//getHTML htmlclass = new getHTML();
-			read read = new read();
-			postHTML post = new postHTML();			
+			read read = new read();		
 			readNXT.scheduleAtFixedRate(read, 0, 10, TimeUnit.MILLISECONDS);
 			sendserver.scheduleAtFixedRate(new getHTML(), 0, 1, TimeUnit.SECONDS);
-			getserver.scheduleAtFixedRate(post, 0, 1, TimeUnit.SECONDS);
+			getserver.scheduleAtFixedRate(new postHTML(true), 0, 1, TimeUnit.SECONDS);
+			getserver.scheduleAtFixedRate(new postHTML(false), 0, 1, TimeUnit.SECONDS);
 			//change_motor(new boolean[] {true, true, true}, new byte[] {0,0,0}, 1);
 		}
 	}
@@ -56,23 +56,31 @@ public class Threads {
 	public class postHTML implements Runnable
 	{
 		String customMsg = "";
-		URL url;
-		HttpURLConnection connection = null;
-		String urlParameters = null;
+		HttpURLConnection connection;
+		String urlParameters;
 		String line;
+		URL postUrl; 
 		StringBuffer response = new StringBuffer(); 
+		boolean handshake;
 
-		public postHTML() {
-			this("");
+		public postHTML(String msg) {
+
+			this(false, msg);
+
 		}
 
-		public postHTML(String msg) {  
+		public postHTML(boolean x) {
+			this(x, "");
+		}
+
+		public postHTML(boolean x, String msg) {  
+			handshake = x;
 			try {
 				customMsg = "&msg="+ URLEncoder.encode(msg, "UTF-8");
 			}
 			catch (Exception e) {
 				Log.v("nxtdriverposthtmlerror", e.getMessage());
-				if(!msg.equals("")) customMsg = "&msg="+ msg;
+				if(msg.length() != 0) customMsg = "&msg="+ msg;
 			}
 
 		}
@@ -81,14 +89,22 @@ public class Threads {
 		{
 			try {
 				urlParameters = "from=" + URLEncoder.encode("slave", "UTF-8") +
-						"&id=" + URLEncoder.encode(String.valueOf(act.id), "UTF-8") +
-						"&sensors={\"SensorA\":\"" + URLEncoder.encode(String.valueOf(received[2]), "UTF-8") +
-						"\",\"SensorB\":\"" + URLEncoder.encode(String.valueOf(received[3]), "UTF-8") +
-						"\",\"SensorC\":\"" + URLEncoder.encode(String.valueOf(received[3]), "UTF-8") +
-						"\",\"SensorD\":\"" + URLEncoder.encode(String.valueOf(received[3]), "UTF-8") + "\"}" +
-						customMsg;
+						"&id=" + URLEncoder.encode(String.valueOf(act.id), "UTF-8");
+				if (!handshake) {
+					urlParameters += "&sensors=" + "[" +'"'+String.valueOf(received[2])  
+							+'"'+","+'"' + String.valueOf(received[3]) 
+							+'"'+","+'"' + String.valueOf(received[4])  
+							+'"'+","+'"' + String.valueOf(received[5])  
+							+'"'+"]" +
+							customMsg;
+					Log.v("params", urlParameters);
+					postUrl = new URL("http://discos.herokuapp.com/io");
+				}
+				else {
+					postUrl = new URL("http://discos.herokuapp.com/io/alive");
+				}
 				//Create connection
-				connection = (HttpURLConnection)url.openConnection();
+				connection = (HttpURLConnection)postUrl.openConnection();
 				connection.setRequestMethod("POST");
 				connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 				connection.setRequestProperty("Content-Length", "" + Integer.toString(urlParameters.getBytes().length));
@@ -135,6 +151,7 @@ public class Threads {
 		}
 	}
 
+
 	public class send implements Runnable{
 		public void run()
 		{
@@ -145,6 +162,7 @@ public class Threads {
 			} catch (Exception e) {
 				Log.v("nxtdriversenderror",e.getMessage());
 			}
+
 		}
 	}
 
@@ -194,6 +212,7 @@ public class Threads {
 				Log.v("nxtdrivergethtmlerror", e.getMessage());
 			}
 		}
+
 	}
 
 	public class compileThread implements Runnable{
@@ -220,19 +239,24 @@ public class Threads {
 		Log.v("nxtdrivercompiler", String.valueOf(d));
 		if(!sending)
 		{
-			sendNXT.scheduleAtFixedRate(new send(), 0, 50, TimeUnit.MILLISECONDS);
-			sending = true;
-		}
+			Log.v("nxtdrivercompiler", "starting change motor");
+			Log.v("nxtdrivercompiler", String.valueOf(d));
+			if(!sending)
+			{
+				sendNXT.scheduleAtFixedRate(new send(), 0, 50, TimeUnit.MILLISECONDS);
+				sending = true;
+			}
 
-		for (int i = 0; i<3; i++)
-		{
-			if(m[i]) motors[0][i] = s[i];
-			else motors[0][i] = 1;
-		}
-		try {
-			Thread.sleep(d);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+			for (int i = 0; i<3; i++)
+			{
+				if(m[i]) motors[0][i] = s[i];
+				else motors[0][i] = 1;
+			}
+			try {
+				Thread.sleep(d);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }
