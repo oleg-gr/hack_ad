@@ -8,7 +8,7 @@ var parser =
 		parser.code = [];
 		doc.eachLine(function(line)
 			{
-				parsed_line = parser.format(line.text);
+				var parsed_line = parser.format(line.text);
 				for (var i = 0; i<parsed_line.length; i++)
 				{
 					if (parsed_line[i] === "") parsed_line = parsed_line.splice(i, 1);
@@ -24,17 +24,21 @@ var parser =
 	},
 
   parseSingle: function(str, callback){
-		var json = {};
-		var code = [];
+		parser.ops = {"!":"not", "|":"or", "&":"and", "<":"less_than", ">":"greater_than", "==":"equals", "=":"assign", "+": "add", "-":"sub", "*":"mult", "/":"div", "%":"mod"};
+		parser.block_switch = {"define":1, "while":2, "if":3};
+		parser.json = {};
+		parser.code = [];
     var parsed_line = parser.format(str);
     for (var i = 0; i<parsed_line.length; i++)
     {
       if (parsed_line[i] === "") parsed_line = parsed_line.splice(i, 1);
     }
-    if (parsed_line[0] != [""]) code.push(parsed_line);
-    var main = parser.buildJSON(code);
-	var superJSON = {"state":"override", "main": main};
-	if (typeof callback === 'function') callback(superJSON);
+    parser.defs = {};
+		parser.main = parser.buildJSON(parser.code);
+		if($.isEmptyObject(parser.defs)) parser.defs = {"definitions":"null"};
+		if($.isEmptyObject(parser.main)) parser.main = [{"null":"null"}];
+		parser.superJSON = {"state":"override", "definitions":parser.defs, "main":parser.main};
+		if (typeof callback === 'function') callback(parser.superJSON);
   },
 	
 	buildJSON: function(code)
@@ -83,7 +87,7 @@ var parser =
 		}
 		for (var key in pf)
 		{
-			if($.isEmptyObject(block)) block = ["null"];
+			if($.isEmptyObject(block)) block = [{"null":"null"}];
 			if(loop_type==1) {parser.defs[key]={"args": pf[key], "code":block}; return [null,i];}
 			else if (loop_type==2) {return [{"while":{"condition": pf, "code":block}}, i];}
 			else if (loop_type==3) {return [{"if":{"condition": pf, "code":block}},i];}
