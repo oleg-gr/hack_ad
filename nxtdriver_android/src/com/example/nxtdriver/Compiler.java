@@ -34,6 +34,9 @@ public class Compiler {
 		{
 			evaluateObject(copy.getJSONObject(i));
 		}
+		
+		t.change_motor(new boolean[] {true, true, true}, new byte[] {1,1,1}, 1);
+		
 	}
 
 	public void next() 
