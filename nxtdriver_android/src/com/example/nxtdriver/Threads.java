@@ -167,23 +167,24 @@ public class Threads {
 				else if(get.startsWith("active", 10) && cpt == null); //some sort of error?
 				else if(get.startsWith("inactive", 10) && get.contains("main")) 
 				{
-					change_motor(new boolean[] {true, true, true}, new byte[] {0,0,0}, 1);
+					change_motor(new boolean[] {true, true, true}, new byte[] {1,1,1}, 1);
 					cpt = new compileThread(get);
 				}
 				else if(get.startsWith("inactive", 10) && !get.contains("main")) 
 				{
 					compile.shutdownNow(); 
-					change_motor(new boolean[] {true, true, true}, new byte[] {0,0,0}, 1);
+					change_motor(new boolean[] {true, true, true}, new byte[] {1,1,1}, 1);
 					cpt = null;
 				}
 				else if(get.startsWith("paused", 10)) 
 				{
-					change_motor(new boolean[] {true, true, true}, new byte[] {0,0,0}, 1);
+					change_motor(new boolean[] {true, true, true}, new byte[] {1,1,1}, 1);
 					compile.wait();
 				}
 				else if(get.startsWith("override", 10))
 				{
 					compile.wait();
+					change_motor(new boolean[] {true, true, true}, new byte[] {1,1,1}, 1);
 					override.submit(new compileThread(get));
 				}
 				else ;
@@ -218,13 +219,14 @@ public class Threads {
 		Log.v("nxtdrivercompiler", String.valueOf(d));
 		if(!sending)
 		{
-			sendNXT.scheduleAtFixedRate(new send(), 0, 500, TimeUnit.MILLISECONDS);
+			sendNXT.scheduleAtFixedRate(new send(), 0, 50, TimeUnit.MILLISECONDS);
 			sending = true;
 		}
 
-		for (int i = 0; i<m.length; i++)
+		for (int i = 0; i<3; i++)
 		{
 			if(m[i]) motors[0][i] = s[i];
+			else motors[0][i] = 1;
 		}
 		try {
 			Thread.sleep(d);
