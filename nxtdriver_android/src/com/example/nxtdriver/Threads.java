@@ -140,7 +140,7 @@ public class Threads {
 		{
 			try 
 			{
-				Log.v("nxtdriversend", String.valueOf(motors[0][0])+ " "+String.valueOf(motors[0][1])+" "+String.valueOf(motors[0][2]));
+				//Log.v("nxtdriversend", String.valueOf(motors[0][0])+ " "+String.valueOf(motors[0][1])+" "+String.valueOf(motors[0][2]));
 				act.mmOutputStream.write(motors[0]);
 			} catch (Exception e) {
 				Log.v("nxtdriversenderror",e.getMessage());
@@ -179,8 +179,8 @@ public class Threads {
 				}
 				else if(get.startsWith("paused", 10)) 
 				{
-					change_motor(new boolean[] {true, true, true}, new byte[] {1,1,1}, 1);
 					compile.wait();
+					change_motor(new boolean[] {true, true, true}, new byte[] {1,1,1}, 1);
 				}
 				else if(get.startsWith("override", 10))
 				{

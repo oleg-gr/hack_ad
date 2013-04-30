@@ -17,6 +17,8 @@ var parser =
 			});
 		parser.defs = {};
 		parser.main = parser.buildJSON(parser.code);
+		if($.isEmptyObject(parser.defs)) parser.defs = {"null"};
+		if($.isEmptyObject(parser.main)) parser.main = {"null"};
 		parser.superJSON = {"state":"active", "definitions":parser.defs, "main":parser.main};
 		if (typeof callback === 'function') callback(parser.superJSON);
 	},
@@ -81,6 +83,7 @@ var parser =
 		}
 		for (var key in pf)
 		{
+			if($.isEmptyObject(block)) block = ["null"];
 			if(loop_type==1) {parser.defs[key]={"args": pf[key], "code":block}; return [null,i];}
 			else if (loop_type==2) {return [{"while":{"condition": pf, "code":block}}, i];}
 			else if (loop_type==3) {return [{"if":{"condition": pf, "code":block}},i];}
