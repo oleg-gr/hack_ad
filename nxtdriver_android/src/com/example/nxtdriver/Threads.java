@@ -23,7 +23,7 @@ public class Threads {
 	ScheduledExecutorService override;
 	String get;
 	String code;
-	Compiler compiler;
+	compileThread cpt;
 	byte[][] motors = new byte[2][3];
 	byte[] received = new byte[3];
 	boolean sending = false;
@@ -155,8 +155,10 @@ public class Threads {
 				while ((line = rd.readLine()) != null) {
 					get += line;
 				}
-				if(get.startsWith("active", 10)) compile.submit(new compileThread(code));
-				else if(get.startsWith("inactive", 10)) code = get;
+				if(get.startsWith("active", 10) && cpt != null) compile.submit(cpt);
+				else if(get.startsWith("active", 10) && cpt == null); //some sort of error?
+				else if(get.startsWith("inactive", 10) && get.contains("main")) cpt = new compileThread(get);
+				else if(get.startsWith("inactive", 10) && !get.contains("main")) {compile.shutdownNow(); cpt = null;}
 				else if(get.startsWith("paused", 10)) compile.wait();
 				else if(get.startsWith("override", 10))
 				{
@@ -175,11 +177,11 @@ public class Threads {
 		compileThread(String code)
 		{
 			this.code = code;
+			compiler = new Compiler(code, Threads.this);
 		}
 		
 		@Override
 		public void run() {
-			compiler = new Compiler(code, Threads.this);
 			compiler.compile();
 		}
 
