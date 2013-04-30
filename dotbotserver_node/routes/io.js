@@ -92,7 +92,6 @@ var listDB = function(res){
   });
 };
 
-
 var resetStream = function(id, res){
   console.log("Resetting stream: %d", id);
   db.collection("in").remove({id: id}, function(err, resp){
@@ -121,11 +120,11 @@ var resetAll = function(res){
 };
 
 var alive = function(msg, res){
-  console.log("Alerting Master that slave " + msg.id + " is alive");
-  delete msg.time;
+  console.log("Alerting server that " + msg.from + " with id " + msg.id + " is alive");
+  if (msg.time){ delete msg.time; }
   msg.time_received = new Date().getTime();
   db.collection("alive", function(err, collection){
-    collection.remove({"id": msg.id}, function(err, num){
+    collection.remove({"id": msg.id, "from": msg.from}, function(err, num){
       collection.insert(msg, {safe: true}, function(err, result){
         if (err) {
           console.log(err);
@@ -140,17 +139,18 @@ var alive = function(msg, res){
   });
 };
 
-var checkAlive = function(res){
+var checkAlive = function(from, res){
   timeNow = new Date().getTime();
   console.log("Checking which are alive");
+  if (from=="master") { search="slave";} else { search="master";}
   db.collection("alive", function(err, collection){
-    collection.find().toArray(function(err, items){
+    collection.find({from: search}).toArray(function(err, items){
       if (err){
         res.write(JSON.stringify({status: 500, err: "Can't select db"}));
       }
       result = {status: 200, alive: {}};
       for (var i=0; i<items.length; i++){
-        if (timeNow - items[i].time_received < 60000){
+        if (timeNow - items[i].time_received < 10000){
           // last response was within a minute
           result.alive[items[i].id] = true;
         } else {
@@ -203,6 +203,7 @@ exports.push = function(req, res){
     res.end();
   }
   else if (req.body.id && req.body.from){
+    if (!req.body.definitions){ req.body.definitions = "";}
     addToDB(msg, collection, res);
   }
 };
@@ -225,21 +226,21 @@ exports.resetStream = function(req, res){
 
 exports.alive = function(req, res){
   res.writeHead(200, {"Content-Type": "application/json"});
-  if (req.body.id && req.body.from == "slave"){
+  if (req.body.id && req.body.from == "slave" || req.body.from == "master"){
     alive(req.body, res);
   } else {
     res.write(JSON.stringify({status: 400, 
-      "err": 'no id found or request not from slave'}));
+      "err": 'no id found or request not from master/slave'}));
     res.end();
   }
 };
 
 exports.checkAlive = function(req, res){
   res.writeHead(200, {"Content-Type": "application/json"});
-  if (req.query.from == "master"){
-    checkAlive(res);
+  if (req.query.from == "master" || req.query.from == "slave"){
+    checkAlive(req.query.from, res);
   } else {
     res.write(JSON.stringify({status: 401, 
-      "err": 'request not from master'}));
+      "err": 'request not from master/slave'}));
   }
 };

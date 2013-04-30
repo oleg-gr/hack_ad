@@ -7,7 +7,7 @@ CodeMirror.defineMode("tnt", function(config) {
   var keywords = wordObj(["and", "begin", "define", "do", "else", "else if","end", "false", "if", 
   "or", "true", "while", "print", "fd","forward","lt","left","rt", "right", "bd", "backward", "return", 
   "motorA", "motorB", "motorC", "motorD", "motorAB", "motorAC", "motorAD", "motorBC", "motorBD", "motorCD",
-  "motorBA", "motorCA", "motorDA", "motorCB", "motorDB", "motorDC", "motor"  
+  "motorBA", "motorCA", "motorDA", "motorCB", "motorDB", "motorDC", "motor", "delay", "getSensorA", "getSensorB", "getSensorC"
   ]);
   var indentWords = wordObj(["do"]);
   var dedentWords = wordObj(["end", "else"]);

@@ -1,9 +1,49 @@
 activeId = "0";
 activeIds = ["0"];
+online = [];
 
 var masterUpdate = function(id_list, callback){
   for (var i = 0; i < id_list.length; i++){
     getObject(id_list[i]);
+  }
+};
+
+var handshake = function(){
+  $.post("http://discos.herokuapp.com/io/alive", {from: "master", id: activeId}, function(resp){console.log("handshaking send"); console.log(resp);}, 'json');
+  $.get("http://discos.herokuapp.com/io/alive?from=master", function(resp){
+    console.log("handshaking receive"); 
+    console.log(resp); 
+    // check differences
+    for (var key in resp.alive){
+      if (resp.alive[key] === false && ($.inArray(key, online) != -1)){
+        makeOffline(key);
+      } else if (resp.alive[key] === true && ($.inArray(key, online) == -1)){
+        makeOnline(key);
+      }
+    }
+  }, 'json');
+};
+
+var makeOnline = function(id){
+  if (id != '1' && id != '2' && id != '0'){
+    console.log("Making key " + id + " online");
+    online.push(id);
+    $('#rover-' + id).removeClass("btn-danger disabled");
+    $('#rover-' + id).addClass("btn-primary");
+    $('#rover-' + id + ' span').html("Ready");
+    deleteTab(id);
+    printConsole("Rover " + id + " has lost connection");
+  }
+};
+
+var makeOffline = function(id){
+  if (id != '1' && id != '2' && id != '0'){
+    console.log("Making key " + id + " offline");
+    online.splice(online.indexOf(id),1);
+    $('#rover-' + id).removeClass("btn-success btn-primary");
+    $('#rover-' + id).addClass("btn-danger disabled");
+    $('#rover-' + id + ' span').html("Offline");
+    printConsole("Rover " + id + " has connected");
   }
 };
 
