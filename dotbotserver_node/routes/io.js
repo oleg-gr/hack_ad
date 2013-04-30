@@ -10,9 +10,7 @@ var Server = mongo.Server,
 
 //var server = new Server(mongoUri, 27017, {});
 var db;
-mongo.Db.connect(mongoUri, {'w':1, 'safe': 'true'}, function(err, database){
-  database.safe = true;
-  database.w = 1;
+mongo.Db.connect(mongoUri, {db: {'w':1, 'safe': 'true'}}, function(err, database){
   db = database;
   if(!err) {
     console.log("Connected to 'disco' database");
@@ -85,6 +83,7 @@ var listDB = function(res){
               console.log(JSON.stringify({alive: items}));
               res.write(JSON.stringify(resp));
               res.end();
+              return resp;
             });
           });
         });

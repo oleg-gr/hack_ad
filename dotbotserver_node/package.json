@@ -13,6 +13,7 @@
     "express": "3.2.0",
     "ejs": "*",
     "css": "*",
-    "mongodb": "1.1.11"
+    "mongodb": "1.1.11",
+    "request": "*"
   }
 }
