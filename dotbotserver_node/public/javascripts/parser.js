@@ -17,7 +17,7 @@ var parser =
 			});
 		parser.defs = {};
 		parser.main = parser.buildJSON(parser.code);
-		parser.superJSON = {"state":"active", "definitions":parser.defs, "main":parser.main};
+		parser.superJSON = {"state":"inactive", "definitions":parser.defs, "main":parser.main};
 		if (typeof callback === 'function') callback(parser.superJSON);
 	},
 
