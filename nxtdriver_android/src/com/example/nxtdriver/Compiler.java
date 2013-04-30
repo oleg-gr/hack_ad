@@ -2,6 +2,8 @@ package com.example.nxtdriver;
 
 import java.util.ArrayList;
 
+import android.util.Log;
+
 public class Compiler {
 	String CHECK = "";
 	ArrayList <JSONObject> variables = new ArrayList <JSONObject>(); 
@@ -106,7 +108,7 @@ public class Compiler {
 
 		} else if (name.equals("motorC")) { motorC((String) function.get("arg0"),(String) function.get("arg1"));
 
-		} else if (name.equals("motorAB")) { motorAB((String) function.get("arg0"),(String) function.get("arg1"), (String) function.get("arg2"));
+		} else if (name.equals("motorAB")) { Log.v("nxtdrivercompiler", "compiled motorab");motorAB((String) function.get("arg0"),(String) function.get("arg1"), (String) function.get("arg2"));
 
 		} else if (name.equals("motorAC")) { motorAC((String) function.get("arg0"),(String) function.get("arg1"), (String) function.get("arg2"));
 
@@ -187,6 +189,7 @@ public class Compiler {
 	}
 
 	private void motorAB(String x1, String x2, String y) {
+		Log.v("nxtcompiler", x1+" "+x2+" "+y);
 		t.change_motor(new boolean[] {true, true, false}, new byte[] {Byte.parseByte(lookup(x1)), Byte.parseByte(lookup(x2))}, Integer.parseInt(lookup(y)));
 	}
 
@@ -243,7 +246,7 @@ public class Compiler {
 
 	private void print(String x) 
 	{
-	    	t.server.submit(t.new postHTML(String.valueOf(lookup(x))));
+	    	t.sendserver.submit(t.new postHTML(String.valueOf(lookup(x))));
 	}
 
 	private  String greater(String x, String y) 
