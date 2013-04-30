@@ -3,6 +3,7 @@ package com.example.nxtdriver;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -46,23 +47,42 @@ public class Threads {
 			postHTML post = new postHTML();			
 			readNXT.scheduleAtFixedRate(read, 0, 10, TimeUnit.MILLISECONDS);
 			server.scheduleAtFixedRate(htmlclass, 0, 1, TimeUnit.SECONDS);
-			server.scheduleAtFixedRate(post, 0, 1, TimeUnit.SECONDS);
+			try {
+			    server.scheduleAtFixedRate(new postHTML(), 0, 1, TimeUnit.SECONDS);
+			} catch (Exception e) {
+			    // TODO Auto-generated catch block
+			    e.printStackTrace();
+			}
+			compiler.compile();
 			change_motor(new boolean[] {true, true, true}, new byte[] {0,0,0}, 1);
 		}
 	}
 
 	public class postHTML implements Runnable
 	{
+	    	String customMsg = "";
 		URL url;
 		HttpURLConnection connection = null;
 		String urlParameters = null;
 		String line;
 		StringBuffer response = new StringBuffer(); 
 		
-		postHTML()
-		{
+		public postHTML() {
+		    this("");
+		}
+		
+		public postHTML(String msg) {
+		    
+		    try {
+			customMsg = "&msg="+ URLEncoder.encode(msg, "UTF-8");
+		    }
+		    catch (UnsupportedEncodingException e) {
+			Log.v("nxtdriver", e.getMessage());
+			customMsg = "&msg="+ msg;
+		    }
 
 		}
+		
 		public void run()
 		{
 			try {
@@ -70,8 +90,13 @@ public class Threads {
 						"&id=" + URLEncoder.encode(String.valueOf(act.id), "UTF-8") +
 						"&status=" + URLEncoder.encode("ok", "UTF-8") +
 						"&sensors=" + URLEncoder.encode(String.valueOf(received[2]), "UTF-8") +
-						"&msg=" + URLEncoder.encode("ok", "UTF-8");
-			
+
+						customMsg;
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			try {
 				//Create connection
 				connection = (HttpURLConnection)url.openConnection();
 				connection.setRequestMethod("POST");
