@@ -48,7 +48,7 @@
 }
 
 .box {
-  padding: 3% 3% 3% 3%;
+  padding: 2% 2% 2% 2%;
 }
 
 .bordered {
@@ -60,7 +60,7 @@
   padding-bottom: 56.25%;
   padding-top: 30px;
   height: 0;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .video-container iframe,  
@@ -222,7 +222,7 @@ body {
 }
 
 div {
-  overflow: hidden;
+  overflow: auto;
 }
 strong {
   color: #653090;

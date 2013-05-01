@@ -19,7 +19,7 @@ var parser =
 		parser.main = parser.buildJSON(parser.code);
 		if($.isEmptyObject(parser.defs)) parser.defs = {"definitions":"null"};
 		if($.isEmptyObject(parser.main)) parser.main = [{"null":"null"}];
-		parser.superJSON = {"state":"active", "definitions":parser.defs, "main":parser.main};
+		parser.superJSON = {"state":"inactive", "definitions":parser.defs, "main":parser.main};
 		if (typeof callback === 'function') callback(parser.superJSON);
 	},
 
@@ -33,6 +33,7 @@ var parser =
     {
       if (parsed_line[i] === "") parsed_line = parsed_line.splice(i, 1);
     }
+    if (parsed_line[0] != [""]) parser.code.push(parsed_line);
     parser.defs = {};
 		parser.main = parser.buildJSON(parser.code);
 		if($.isEmptyObject(parser.defs)) parser.defs = {"definitions":"null"};

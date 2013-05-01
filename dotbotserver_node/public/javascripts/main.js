@@ -76,6 +76,7 @@ var stdIn = function(str){
   } else if (str == "stop()"){
     obj = {state: "inactive", from: "master", id: activeId};
   }
+  $('#std-in').val('');
   if (obj !== null){
     postObject(obj, function(resp){
       printConsole(obj);

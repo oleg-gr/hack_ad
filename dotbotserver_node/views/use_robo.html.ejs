@@ -51,12 +51,17 @@
             </div>
             <div id="collapseOne" class="accordion-body collapse in">
               <div class="accordion-inner">
+                <div class="row-fluid">
+                  <div class="span12">
+                    <center><h3><strong>Dear curious explorer:<br/> It is likely that all our rovers are currently offline. You can still test compiling code below to see what the .bot language looks like or contact us and we can setup a demo for you!</strong></h3></center> 
+                  </div>
+                </div>
                 <div id="rover-row" class="row-fluid">
                   <div class="span2">
-                    <a href="#" id="rover-1" class="rover-btn btn btn-primary">Rover 1 <br/> <span class="rover-status">Ready</span></a>
+                    <a href="#" id="rover-1" class="rover-btn btn disabled btn-danger">Rover 1 <br/> <span class="rover-status">Offline</span></a>
                   </div>
                   <div class="span2">
-                    <a href="#" id="rover-2" class="rover-btn btn btn-primary ">Rover 2 <br/> <span class="rover-status">Ready</span></a>
+                    <a href="#" id="rover-2" class="rover-btn btn disabled btn-danger ">Rover 2 <br/> <span class="rover-status">Offline</span></a>
                   </div>
                   <div class="span2">
                     <a href="#" id="rover-3" class="rover-btn btn disabled btn-danger">Rover 3  <br /> <span class="rover-status">Offline</span></a>
@@ -84,7 +89,7 @@
             </div>
             <div id="collapseTwo" class="accordion-body collapse">
               <div class="accordion-inner">
-                Rover is stuck in a maze!!
+                The Rover is stuck in a maze!!! Write a program to rescue it.
               </div>
             </div>
           </div>
@@ -161,7 +166,7 @@
     </div>
     <div id="function-defs" class="container">
       <div class="row-fluid">
-        <h3>Function List</h3>
+        <h3>TNT Help</h3>
       </div>
       <div class="row-fluid">
         <div class="span6">
@@ -215,6 +220,9 @@
           <div class="row-fluid divider-small">
             <div class="span12 box bordered">
               <strong>Control Flow</strong> 
+              <br/>Start<br/><span class="code function">start()</span>
+              <br/>Stop<br/><span class="code function">stop()</span>
+              <br/>Pause<br/><span class="code function">pause(*milliseconds)</span>
               <br/>Delay<br/><span class="code function">delay(*milliseconds)</span><br/>
               <br/>Background Thread<br/><span class="code function">
                 define background() do<br/>
