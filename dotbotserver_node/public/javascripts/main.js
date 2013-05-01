@@ -55,7 +55,6 @@ var printConsole = function(text){
 
 var postObject = function(obj, callback){
   var val = $.post("http://discos.herokuapp.com/io", obj, printConsole(JSON.stringify(obj, null, 4)), 'json');
-  if (typeof callback === 'function') callback(val);
 };
 
 var getObject = function(id, callback){
@@ -78,9 +77,7 @@ var stdIn = function(str){
   }
   $('#std-in').val('');
   if (obj !== null){
-    postObject(obj, function(resp){
-      printConsole(obj);
-    });
+    postObject(obj);
   } else {
     $('#std-in').val('');
     parseJSON(str, function(json){
@@ -114,8 +111,8 @@ $(document).ready(function() {
   });
   $('.std-in').on('keypress', function(e){
     if (e.keyCode == 13){
-      if (e.shiftKey === true){
-      } else {
+      if (e.shiftKey !== true)
+      {
         e.preventDefault();
         stdIn($('#std-in').val());
       }
