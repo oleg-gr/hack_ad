@@ -116,13 +116,13 @@ public class Compiler {
 
 		} else if (name.equals("motorABC")) { motorABC((String) function.get("arg0"),(String) function.get("arg1"), (String) function.get("arg2"), (String) function.get("arg3"));
 
-		} else if (name.equals("forward") || name.equals("fd")) {motorAB("80", "80", String.valueOf(Integer.parseInt(lookup(((String)function.get("arg0"))))*1000));
+		} else if (name.equals("forward") || name.equals("fd")) {motorAB("80", "80", String.valueOf(Integer.parseInt(lookup(((String)function.get("arg0"))))*37));
 
-		} else if (name.equals("backward") || name.equals("bd")) { motorAB("-80", "-80", String.valueOf(Integer.parseInt(lookup(((String)function.get("arg0"))))*1000));
+		} else if (name.equals("backward") || name.equals("bd")) { motorAB("-80", "-80", String.valueOf(Integer.parseInt(lookup(((String)function.get("arg0"))))*37));
 
-		} else if (name.equals("right") || name.equals("rt")) { motorAB("0", "80", String.valueOf(Integer.parseInt(lookup(((String)function.get("arg0"))))*1000));
+		} else if (name.equals("right") || name.equals("rt")) { motorAB("0", "80", String.valueOf(Integer.parseInt(lookup(((String)function.get("arg0"))))*37));
 
-		} else if (name.equals("left") || name.equals("lt")) { motorAB("80", "0", String.valueOf(Integer.parseInt(lookup(((String)function.get("arg0"))))*1000));
+		} else if (name.equals("left") || name.equals("lt")) { motorAB("80", "0", String.valueOf(Integer.parseInt(lookup(((String)function.get("arg0"))))*37));
 
 		} else if (name.equals("return")) { return ((String) lookup((String) function.get("arg0")));
 
